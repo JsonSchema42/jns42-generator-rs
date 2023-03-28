@@ -1,4 +1,5 @@
-use crate::meta_schema_id::*;
+use crate::schemas::manager::Manager;
+use crate::schemas::meta::MetaSchemaId;
 use clap::Parser;
 use url::Url;
 
@@ -25,22 +26,16 @@ pub struct CommandOptions {
     pub unique_name_seed: usize,
 }
 
-pub fn run_command(options: CommandOptions) {
+pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
     let CommandOptions {
         schema_url,
         default_meta_schema_url,
-        package_directory,
-        package_name,
-        package_version,
-        generate_test,
-        unique_name_seed,
+        ..
     } = options;
 
-    println!("{:?}", schema_url);
-    println!("{:?}", default_meta_schema_url);
-    println!("{:?}", package_directory);
-    println!("{:?}", package_name);
-    println!("{:?}", package_version);
-    println!("{:?}", generate_test);
-    println!("{:?}", unique_name_seed);
+    let manager = Manager::new();
+
+    manager.load_from_url(&schema_url, &schema_url, None, default_meta_schema_url)?;
+
+    Ok(())
 }

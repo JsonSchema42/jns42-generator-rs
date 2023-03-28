@@ -1,4 +1,3 @@
-mod meta_schema_id;
 mod programs;
 mod schemas;
 
@@ -7,5 +6,5 @@ use programs::{run_program, ProgramOptions};
 
 fn main() {
     let options = ProgramOptions::parse();
-    run_program(options)
+    run_program(options).unwrap()
 }

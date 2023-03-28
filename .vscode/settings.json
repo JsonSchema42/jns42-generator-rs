@@ -7,10 +7,5 @@
   "editor.rulers": [
     100
   ],
-  "rust-analyzer.check.command": "clippy",
-  "cSpell.words": [
-    "goodschema",
-    "itertools",
-    "urlencoding"
-  ]
+  "rust-analyzer.check.command": "clippy"
 }

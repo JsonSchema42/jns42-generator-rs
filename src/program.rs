@@ -1,7 +1,6 @@
 use crate::meta_schema_id::*;
 use clap::{Parser, Subcommand};
 
-/// Simple program to greet a person
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct ProgramOptions {
@@ -11,7 +10,6 @@ pub struct ProgramOptions {
 
 #[derive(Subcommand, Debug)]
 pub enum ProgramCommands {
-    /// does testing things
     Package {
         schema_url: String,
 

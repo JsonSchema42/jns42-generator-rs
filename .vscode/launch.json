@@ -3,13 +3,14 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug unit tests in library 'goodschema'",
+      "name": "Debug unit tests",
       "cargo": {
         "args": [
           "test",
           "--no-run",
           "--lib",
-          "--package=goodschema"
+          "--package=goodschema",
+          "--all-targets"
         ],
         "filter": {
           "name": "goodschema",
@@ -18,6 +19,333 @@
       },
       "args": [],
       "cwd": "${workspaceFolder}"
-    }
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package string-or-boolean",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/string-or-boolean.json",
+        "--package-directory",
+        ".package/string-or-boolean",
+        "--package-name",
+        "string-or-boolean",
+        "--package-version",
+        "0.0.0",
+        "--generate-test"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package simple-object",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/simple-object.json",
+        "--package-directory",
+        ".package/simple-object",
+        "--package-name",
+        "simple-object",
+        "--package-version",
+        "0.0.0",
+        "--generate-test"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package array-with-ref",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/array-with-ref.json",
+        "--package-directory",
+        ".package/array-with-ref",
+        "--package-name",
+        "array-with-ref",
+        "--package-version",
+        "0.0.0",
+        "--generate-test"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package openapi_v3-0_2021-09-28",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/openapi/openapi_v3-0_2021-09-28.json",
+        "--package-directory",
+        ".package/openapi_v3-0_2021-09-28",
+        "--package-name",
+        "openapi_v3-0_2021-09-28",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package openapi_v3-1_2022-10-07",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/openapi/openapi_v3-1_2022-10-07.json",
+        "--package-directory",
+        ".package/openapi_v3-1_2022-10-07",
+        "--package-name",
+        "openapi_v3-1_2022-10-07",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package schema-2020-12",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/schema-2020-12/schema",
+        "--package-directory",
+        ".package/schema-2020-12",
+        "--package-name",
+        "schema-2020-12",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package schema-2019-09",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/schema-2019-09/schema",
+        "--package-directory",
+        ".package/schema-2019-09",
+        "--package-name",
+        "schema-2019-09",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package schema-draft-07",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/schema-draft-07/schema",
+        "--package-directory",
+        ".package/schema-draft-07",
+        "--package-name",
+        "schema-draft-07",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package schema-draft-06",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/schema-draft-06/schema",
+        "--package-directory",
+        ".package/schema-draft-06",
+        "--package-name",
+        "schema-draft-06",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package schema-draft-04",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/schema-draft-04/schema",
+        "--package-directory",
+        ".package/schema-draft-04",
+        "--package-name",
+        "schema-draft-04",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package output-2020-12",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/output-2020-12/schema",
+        "--package-directory",
+        ".package/output-2020-12",
+        "--package-name",
+        "output-2020-12",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "package output-2019-09",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=goodschema",
+          "--package=goodschema"
+        ],
+        "filter": {
+          "name": "goodschema",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "package",
+        "file://${workspaceFolder}/fixtures/output-2019-09/schema",
+        "--package-directory",
+        ".package/output-2019-09",
+        "--package-name",
+        "output-2019-09",
+        "--package-version",
+        "0.0.0"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
   ]
 }

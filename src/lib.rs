@@ -1,2 +1,2 @@
 mod meta_schema_id;
-pub mod schema;
+pub mod schemas;

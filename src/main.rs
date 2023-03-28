@@ -1,3 +1,9 @@
+mod meta_schema_id;
+mod program;
+
+use clap::Parser;
+use program::ProgramOptions;
+
 fn main() {
-    println!("Hello, world!");
+    let _options = ProgramOptions::parse();
 }

@@ -12,5 +12,14 @@ keywords = ["good", "json", "schema"]
 maintenance = { status = "actively-developed" }
 
 [dependencies]
+clap = { version = "4.1.14", features = ["derive"] }
 serde = "1.0.158"
 serde_json = "1.0.94"
+
+[lib]
+name = "goodschema"
+path = "src/lib.rs"
+
+[[bin]]
+name = "goodschema"
+path = "src/main.rs"

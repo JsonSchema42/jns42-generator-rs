@@ -3,11 +3,16 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug unit tests in library 'goodrouter'",
+      "name": "Debug unit tests in library 'goodschema'",
       "cargo": {
-        "args": ["test", "--no-run", "--lib", "--package=goodrouter"],
+        "args": [
+          "test",
+          "--no-run",
+          "--lib",
+          "--package=goodschema"
+        ],
         "filter": {
-          "name": "goodrouter",
+          "name": "goodschema",
           "kind": "lib"
         }
       },

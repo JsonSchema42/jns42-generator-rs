@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand};
 #[command(author, version, about, long_about = None)]
 pub struct ProgramOptions {
     #[command(subcommand)]
-    pub command: Option<ProgramCommands>,
+    pub command: ProgramCommands,
 }
 
 #[derive(Subcommand, Debug)]
@@ -13,7 +13,7 @@ pub enum ProgramCommands {
     Package {
         schema_url: String,
 
-        #[arg(long)]
+        #[arg(long, default_value_t = MetaSchemaId::Draft202012)]
         default_meta_schema_url: MetaSchemaId,
 
         #[arg(long)]
@@ -28,7 +28,7 @@ pub enum ProgramCommands {
         #[arg(long)]
         generate_test: bool,
 
-        #[arg(long)]
+        #[arg(long, default_value_t = 0)]
         unique_name_seed: usize,
     },
 }

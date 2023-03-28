@@ -5,5 +5,7 @@ use clap::Parser;
 use program::ProgramOptions;
 
 fn main() {
-    let _options = ProgramOptions::parse();
+    let options = ProgramOptions::parse();
+
+    println!("{:?}", options)
 }

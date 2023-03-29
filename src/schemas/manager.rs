@@ -35,10 +35,16 @@ impl<'a> Manager<'a> {
             Box::new(schemas::draft_04::loader::LoaderImpl::new()),
         );
 
-        Manager {
+        let manager = Manager {
             loaders,
             ..Default::default()
+        };
+
+        for loader in manager.loaders.values() {
+            loader.set_manager(&manager);
         }
+
+        manager
     }
 
     pub fn load_from_root_node(

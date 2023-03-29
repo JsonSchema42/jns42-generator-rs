@@ -1,6 +1,6 @@
 use super::{loader::Loader, meta::MetaSchemaId};
 use crate::schemas;
-use std::{collections::HashMap, fs::File};
+use std::{cell::RefCell, collections::HashMap, fs::File, rc::Rc};
 use url::Url;
 
 #[derive(Default)]
@@ -12,7 +12,7 @@ pub struct Manager<'a> {
 
 impl<'a> Manager<'a> {
     pub fn new() -> Self {
-        let mut loaders: HashMap<MetaSchemaId, Box<dyn Loader>> = HashMap::new();
+        let mut loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a>>> = HashMap::new();
 
         loaders.insert(
             MetaSchemaId::Draft202012,
@@ -20,19 +20,19 @@ impl<'a> Manager<'a> {
         );
         loaders.insert(
             MetaSchemaId::Draft201909,
-            Box::new(schemas::draft_2019_09::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
         );
         loaders.insert(
             MetaSchemaId::Draft07,
-            Box::new(schemas::draft_07::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
         );
         loaders.insert(
             MetaSchemaId::Draft06,
-            Box::new(schemas::draft_06::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
         );
         loaders.insert(
             MetaSchemaId::Draft04,
-            Box::new(schemas::draft_04::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
         );
 
         let manager = Manager {
@@ -40,9 +40,9 @@ impl<'a> Manager<'a> {
             ..Default::default()
         };
 
-        for loader in manager.loaders.values() {
-            loader.set_manager(&manager);
-        }
+        // for loader in manager.loaders.values() {
+        //     loader.set_manager(&manager);
+        // }
 
         manager
     }

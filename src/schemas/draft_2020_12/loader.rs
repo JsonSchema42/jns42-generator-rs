@@ -5,6 +5,7 @@ use crate::schemas::manager::Manager;
 use crate::schemas::meta::MetaSchemaId;
 use url::Url;
 
+#[derive(Default)]
 pub struct LoaderImpl {}
 
 impl LoaderImpl {

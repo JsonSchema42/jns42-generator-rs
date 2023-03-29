@@ -11,6 +11,18 @@ impl Manager {
         Manager {}
     }
 
+    pub fn load_from_node(
+        &self,
+        node: serde_json::Value,
+        nodeUrl: &Url,
+        retrievelUrl: &Url,
+        referencing_url: Option<&Url>,
+        default_meta_schema_id: MetaSchemaId,
+    ) -> Result<(), &'static str> {
+        const meta_schema_id = node.dios
+        Ok(())
+    }
+
     pub fn load_from_url(
         &self,
         node_url: &Url,
@@ -22,10 +34,6 @@ impl Manager {
 
         println!("{:?}", value);
 
-        Ok(())
-    }
-
-    pub fn load_from_node(&self, url: &Url) -> Result<(), &'static str> {
         Ok(())
     }
 

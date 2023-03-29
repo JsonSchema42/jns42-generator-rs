@@ -35,7 +35,7 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
 
     let manager = Manager::new();
 
-    manager.load_from_url(&schema_url, &schema_url, None, default_meta_schema_url)?;
+    manager.load_from_url(&schema_url, &schema_url, None, &default_meta_schema_url)?;
 
     Ok(())
 }

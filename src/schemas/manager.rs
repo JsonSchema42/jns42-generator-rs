@@ -21,31 +21,31 @@ impl<'a> Manager<'a> {
         loaders.insert(
             MetaSchemaId::Draft202012,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                manager.clone(),
+                Rc::downgrade(&manager),
             )),
         );
         loaders.insert(
             MetaSchemaId::Draft201909,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                manager.clone(),
+                Rc::downgrade(&manager),
             )),
         );
         loaders.insert(
             MetaSchemaId::Draft07,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                manager.clone(),
+                Rc::downgrade(&manager),
             )),
         );
         loaders.insert(
             MetaSchemaId::Draft06,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                manager.clone(),
+                Rc::downgrade(&manager),
             )),
         );
         loaders.insert(
             MetaSchemaId::Draft04,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                manager.clone(),
+                Rc::downgrade(&manager),
             )),
         );
 

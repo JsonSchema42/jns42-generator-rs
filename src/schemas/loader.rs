@@ -1,5 +1,4 @@
-use super::{manager::Manager, meta::MetaSchemaId};
-use std::{cell::RefCell, rc::Rc};
+use super::meta::MetaSchemaId;
 use url::Url;
 
 pub trait Loader<'a> {

@@ -1,11 +1,6 @@
 use super::{loader::Loader, meta::MetaSchemaId};
 use crate::schemas;
-use std::{
-    cell::{Ref, RefCell},
-    collections::HashMap,
-    fs::File,
-    rc::Rc,
-};
+use std::{cell::RefCell, collections::HashMap, fs::File, rc::Rc};
 use url::Url;
 
 #[derive(Default)]

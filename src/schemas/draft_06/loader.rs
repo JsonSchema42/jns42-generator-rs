@@ -3,21 +3,22 @@ use super::selectors::Selectors;
 use crate::schemas::loader::Loader;
 use crate::schemas::manager::Manager;
 use crate::schemas::meta::MetaSchemaId;
+use std::cell::RefCell;
+use std::rc::Rc;
 use url::Url;
 
-pub struct LoaderImpl {}
+#[derive(Default)]
+pub struct LoaderImpl<'a> {
+    manager: Rc<RefCell<Option<Manager<'a>>>>,
+}
 
-impl LoaderImpl {
-    pub fn new() -> Self {
-        Self {}
+impl<'a> LoaderImpl<'a> {
+    pub fn new(manager: Rc<RefCell<Option<Manager<'a>>>>) -> Self {
+        Self { manager }
     }
 }
 
-impl<'a> Loader<'a> for LoaderImpl {
-    fn set_manager(&self, manager: &'a Manager) {
-        todo!()
-    }
-
+impl<'a> Loader<'a> for LoaderImpl<'a> {
     fn is_schema_root_node(&self, node: &serde_json::Value) -> bool {
         if let Some(schema) = node.schema() {
             return schema == META_SCHEMA_ID;

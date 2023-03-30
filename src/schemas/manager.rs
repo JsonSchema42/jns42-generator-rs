@@ -1,6 +1,11 @@
 use super::{loader::Loader, meta::MetaSchemaId};
 use crate::schemas;
-use std::{cell::RefCell, collections::HashMap, fs::File, rc::Rc};
+use std::{
+    cell::{Ref, RefCell},
+    collections::HashMap,
+    fs::File,
+    rc::Rc,
+};
 use url::Url;
 
 #[derive(Default)]
@@ -11,38 +16,48 @@ pub struct Manager<'a> {
 }
 
 impl<'a> Manager<'a> {
-    pub fn new() -> Self {
+    pub fn new() -> Rc<RefCell<Option<Self>>> {
+        let manager = None;
+        let manager = RefCell::new(manager);
+        let manager = Rc::new(manager);
+
         let mut loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a>>> = HashMap::new();
 
         loaders.insert(
             MetaSchemaId::Draft202012,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
+                manager.clone(),
+            )),
         );
         loaders.insert(
             MetaSchemaId::Draft201909,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
+                manager.clone(),
+            )),
         );
         loaders.insert(
             MetaSchemaId::Draft07,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
+                manager.clone(),
+            )),
         );
         loaders.insert(
             MetaSchemaId::Draft06,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
+                manager.clone(),
+            )),
         );
         loaders.insert(
             MetaSchemaId::Draft04,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
+                manager.clone(),
+            )),
         );
 
-        let manager = Manager {
+        *manager.borrow_mut() = Some(Manager {
             loaders,
             ..Default::default()
-        };
-
-        // for loader in manager.loaders.values() {
-        //     loader.set_manager(&manager);
-        // }
+        });
 
         manager
     }

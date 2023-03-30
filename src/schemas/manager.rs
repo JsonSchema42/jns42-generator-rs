@@ -5,7 +5,7 @@ use url::Url;
 
 #[derive(Default)]
 pub struct Manager<'a> {
-    loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a>>>,
+    loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a> + 'a>>,
     retrieval_root_node_map: HashMap<&'a Url, &'a Url>,
     root_node_retrieval_map: HashMap<&'a Url, &'a Url>,
 }

@@ -60,12 +60,16 @@ impl<'a> Manager<'a> {
 
     pub fn load_from_root_node(
         &mut self,
-        node: &'a serde_json::Value,
         node_url: &'a Url,
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
+        let node = self
+            .root_nodes
+            .get(retrieval_url)
+            .ok_or("root_node not found")?;
+
         let mut schema_id = self.discover_schema_id(node);
         if schema_id == MetaSchemaId::Unknown {
             schema_id = default_meta_schema_id;
@@ -73,13 +77,10 @@ impl<'a> Manager<'a> {
 
         let loader = self.loaders.get_mut(&schema_id).unwrap();
 
-        let node_url = loader.load_from_root_node(
-            node,
-            node_url,
-            retrieval_url,
-            referencing_url,
-            default_meta_schema_id,
-        )?;
+        !todo!();
+
+        let node_url =
+            loader.load_from_root_node(node, node_url, retrieval_url, referencing_url)?;
 
         Ok(node_url)
     }
@@ -100,10 +101,7 @@ impl<'a> Manager<'a> {
 
         let root_node = self.root_nodes.get(retrieval_url).unwrap();
 
-        todo!();
-
         let root_node_url = self.load_from_root_node(
-            root_node,
             node_url,
             retrieval_url,
             referencing_url,

@@ -2,7 +2,6 @@ use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
 use crate::schemas::loader::Loader;
 use crate::schemas::manager::Manager;
-use crate::schemas::meta::MetaSchemaId;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::{Rc, Weak};
@@ -69,7 +68,6 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         node_url: &'a Url,
         retrieval_url: &'a Url,
         referencing_node_url: Option<&'a Url>,
-        default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
         let mut node_url = node_url.clone();
         let maybe_node_id = node.select_id();

@@ -1,4 +1,3 @@
-use super::meta::MetaSchemaId;
 use url::Url;
 
 pub trait Loader<'a> {
@@ -10,6 +9,5 @@ pub trait Loader<'a> {
         node_url: &'a Url,
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
-        default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str>;
 }

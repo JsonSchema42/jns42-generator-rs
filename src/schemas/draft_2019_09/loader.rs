@@ -2,7 +2,6 @@ use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
 use crate::schemas::loader::Loader;
 use crate::schemas::manager::Manager;
-use crate::schemas::meta::MetaSchemaId;
 use std::cell::RefCell;
 use std::rc::Weak;
 use url::Url;
@@ -32,7 +31,6 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         node_url: &'a Url,
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
-        default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
         todo!()
     }

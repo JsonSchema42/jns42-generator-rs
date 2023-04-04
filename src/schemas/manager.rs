@@ -1,13 +1,14 @@
 use super::{loader::Loader, meta::MetaSchemaId};
 use crate::schemas;
-use std::{cell::RefCell, collections::HashMap, fs::File, rc::Rc};
+use std::{borrow::Cow, cell::RefCell, collections::HashMap, fs::File, rc::Rc};
 use url::Url;
 
 #[derive(Default)]
 pub struct Manager<'a> {
     loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a> + 'a>>,
-    retrieval_root_node_map: HashMap<&'a Url, &'a Url>,
-    root_node_retrieval_map: HashMap<&'a Url, &'a Url>,
+    retrieval_root_node_map: HashMap<Url, Url>,
+    root_node_retrieval_map: HashMap<Url, Url>,
+    root_nodes: HashMap<Url, serde_json::Value>,
 }
 
 impl<'a> Manager<'a> {
@@ -58,19 +59,19 @@ impl<'a> Manager<'a> {
     }
 
     pub fn load_from_root_node(
-        &self,
-        node: &serde_json::Value,
+        &mut self,
+        node: &'a serde_json::Value,
         node_url: &'a Url,
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<&'a Url, &'static str> {
+    ) -> Result<Cow<'a, Url>, &'static str> {
         let mut schema_id = self.discover_schema_id(node);
         if schema_id == MetaSchemaId::Unknown {
             schema_id = default_meta_schema_id;
         }
 
-        let loader = self.loaders.get(&schema_id).unwrap();
+        let loader = self.loaders.get_mut(&schema_id).unwrap();
 
         let node_url = loader.load_from_root_node(
             node,
@@ -89,33 +90,39 @@ impl<'a> Manager<'a> {
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<&'a Url, &'static str> {
-        if let Some(root_node_url) = self.retrieval_root_node_map.get(&retrieval_url) {
-            return Ok(root_node_url);
+    ) -> Result<Cow<'a, Url>, &'static str> {
+        if let Some(root_node_url) = self.retrieval_root_node_map.get(retrieval_url) {
+            return Ok(Cow::Owned(root_node_url.clone()));
         }
 
         let root_node = self.fetch_root_node_from_url(retrieval_url)?;
+        self.root_nodes.insert(retrieval_url.clone(), root_node);
 
-        let root_node_url = self.load_from_root_node(
-            &root_node,
+        let root_node = self.root_nodes.get(retrieval_url).unwrap();
+
+        todo!();
+
+        let root_node_url_cow = self.load_from_root_node(
+            root_node,
             node_url,
             retrieval_url,
             referencing_url,
             default_meta_schema_id,
         )?;
 
-        self.retrieval_root_node_map
-            .insert(retrieval_url, root_node_url);
-        self.root_node_retrieval_map
-            .insert(root_node_url, retrieval_url);
+        let root_node_url = root_node_url_cow.into_owned();
 
-        Ok(root_node_url)
+        self.retrieval_root_node_map
+            .insert(retrieval_url.clone(), root_node_url.clone());
+        self.root_node_retrieval_map
+            .insert(root_node_url.clone(), retrieval_url.clone());
+
+        let root_node_url_cow = Cow::Owned(root_node_url);
+
+        Ok(root_node_url_cow)
     }
 
-    pub fn fetch_root_node_from_url(
-        &self,
-        url: &'a Url,
-    ) -> Result<serde_json::Value, &'static str> {
+    pub fn fetch_root_node_from_url(&self, url: &Url) -> Result<serde_json::Value, &'static str> {
         match url.scheme() {
             "file" => {
                 let path = url.path();

@@ -1,5 +1,3 @@
-use std::{borrow::Cow, rc::Rc};
-
 use super::meta::MetaSchemaId;
 use url::Url;
 
@@ -13,5 +11,5 @@ pub trait Loader<'a> {
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<Cow<'a, Url>, &'static str>;
+    ) -> Result<Url, &'static str>;
 }

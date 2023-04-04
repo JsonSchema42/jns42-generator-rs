@@ -1,6 +1,6 @@
 use super::{loader::Loader, meta::MetaSchemaId};
 use crate::schemas;
-use std::{borrow::Cow, cell::RefCell, collections::HashMap, fs::File, rc::Rc};
+use std::{cell::RefCell, collections::HashMap, fs::File, rc::Rc};
 use url::Url;
 
 #[derive(Default)]
@@ -65,7 +65,7 @@ impl<'a> Manager<'a> {
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<Cow<'a, Url>, &'static str> {
+    ) -> Result<Url, &'static str> {
         let mut schema_id = self.discover_schema_id(node);
         if schema_id == MetaSchemaId::Unknown {
             schema_id = default_meta_schema_id;
@@ -90,9 +90,9 @@ impl<'a> Manager<'a> {
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<Cow<'a, Url>, &'static str> {
+    ) -> Result<Url, &'static str> {
         if let Some(root_node_url) = self.retrieval_root_node_map.get(retrieval_url) {
-            return Ok(Cow::Owned(root_node_url.clone()));
+            return Ok(root_node_url.clone());
         }
 
         let root_node = self.fetch_root_node_from_url(retrieval_url)?;
@@ -102,7 +102,7 @@ impl<'a> Manager<'a> {
 
         todo!();
 
-        let root_node_url_cow = self.load_from_root_node(
+        let root_node_url = self.load_from_root_node(
             root_node,
             node_url,
             retrieval_url,
@@ -110,16 +110,12 @@ impl<'a> Manager<'a> {
             default_meta_schema_id,
         )?;
 
-        let root_node_url = root_node_url_cow.into_owned();
-
         self.retrieval_root_node_map
             .insert(retrieval_url.clone(), root_node_url.clone());
         self.root_node_retrieval_map
             .insert(root_node_url.clone(), retrieval_url.clone());
 
-        let root_node_url_cow = Cow::Owned(root_node_url);
-
-        Ok(root_node_url_cow)
+        Ok(root_node_url)
     }
 
     pub fn fetch_root_node_from_url(&self, url: &Url) -> Result<serde_json::Value, &'static str> {

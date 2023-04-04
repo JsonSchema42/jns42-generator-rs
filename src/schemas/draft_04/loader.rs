@@ -3,7 +3,6 @@ use super::selectors::Selectors;
 use crate::schemas::loader::Loader;
 use crate::schemas::manager::Manager;
 use crate::schemas::meta::MetaSchemaId;
-use std::borrow::Cow;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::{Rc, Weak};
@@ -11,8 +10,8 @@ use url::Url;
 
 struct SchemaLoaderRootNodeItem<'a> {
     node: &'a serde_json::Value,
-    node_url: &'a Url,
-    referencing_node_url: Option<&'a Url>,
+    node_url: Url,
+    referencing_node_url: Option<Url>,
 }
 
 #[derive(Default)]
@@ -71,29 +70,31 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         retrieval_url: &'a Url,
         referencing_node_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<Cow<'a, Url>, &'static str> {
-        let mut node_url_cow = Cow::Borrowed(node_url);
+    ) -> Result<Url, &'static str> {
+        let mut node_url = node_url.clone();
         let maybe_node_id = node.select_id();
         if let Some(node_id) = maybe_node_id {
-            node_url_cow = Cow::Owned(Url::parse(node_id).unwrap());
+            node_url = Url::parse(node_id).unwrap();
         }
 
-        if self.root_node_map.contains_key(node_url_cow.as_ref()) {
-            return Ok(node_url_cow);
+        if self.root_node_map.contains_key(&node_url) {
+            return Ok(node_url);
         }
 
         let item = SchemaLoaderRootNodeItem {
             node,
             node_url,
-            referencing_node_url,
+            referencing_node_url: referencing_node_url.cloned(),
         };
 
-        self.root_node_map.insert(node_url, item);
+        todo!();
+
+        self.root_node_map.insert(&node_url, item);
 
         // TODO register with manager
 
         // TODO load from subnodes
 
-        Ok(node_url_cow)
+        Ok(node_url)
     }
 }

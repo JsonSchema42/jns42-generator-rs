@@ -8,6 +8,7 @@ pub struct Manager<'a> {
     loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a> + 'a>>,
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
+    root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
 }
 
 impl<'a> Manager<'a> {
@@ -58,7 +59,7 @@ impl<'a> Manager<'a> {
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<&'a Url, &'static str> {
+    ) -> Result<Url, &'static str> {
         let mut schema_id = self.discover_schema_id(node);
         if schema_id == MetaSchemaId::Unknown {
             schema_id = default_meta_schema_id;

@@ -38,7 +38,7 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<&'a Url, &'static str> {
+    ) -> Result<Url, &'static str> {
         todo!()
     }
 }

@@ -9,11 +9,11 @@ use url::Url;
 
 #[derive(Default)]
 pub struct LoaderImpl<'a> {
-    manager: Weak<RefCell<Option<Manager<'a>>>>,
+    manager: Weak<RefCell<Manager<'a>>>,
 }
 
 impl<'a> LoaderImpl<'a> {
-    pub fn new(manager: Weak<RefCell<Option<Manager<'a>>>>) -> Self {
+    pub fn new(manager: Weak<RefCell<Manager<'a>>>) -> Self {
         Self { manager }
     }
 }

@@ -11,48 +11,42 @@ pub struct Manager<'a> {
 }
 
 impl<'a> Manager<'a> {
-    pub fn new() -> Rc<RefCell<Option<Self>>> {
-        let manager = None;
+    pub fn new() -> Rc<RefCell<Self>> {
+        let manager = Self::default();
+
         let manager = RefCell::new(manager);
         let manager = Rc::new(manager);
 
-        let mut loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a>>> = HashMap::new();
-
-        loaders.insert(
+        manager.borrow_mut().add_loader(
             MetaSchemaId::Draft202012,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
                 Rc::downgrade(&manager),
             )),
         );
-        loaders.insert(
+        manager.borrow_mut().add_loader(
             MetaSchemaId::Draft201909,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
                 Rc::downgrade(&manager),
             )),
         );
-        loaders.insert(
+        manager.borrow_mut().add_loader(
             MetaSchemaId::Draft07,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
                 Rc::downgrade(&manager),
             )),
         );
-        loaders.insert(
+        manager.borrow_mut().add_loader(
             MetaSchemaId::Draft06,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
                 Rc::downgrade(&manager),
             )),
         );
-        loaders.insert(
+        manager.borrow_mut().add_loader(
             MetaSchemaId::Draft04,
             Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
                 Rc::downgrade(&manager),
             )),
         );
-
-        *manager.borrow_mut() = Some(Manager {
-            loaders,
-            ..Default::default()
-        });
 
         manager
     }
@@ -138,5 +132,19 @@ impl<'a> Manager<'a> {
         }
 
         MetaSchemaId::Unknown
+    }
+
+    fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: Box<dyn Loader<'a> + 'a>) {
+        self.loaders.insert(meta_schema_id, loader);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn simple_manager() {
+        let _manager = Manager::new();
     }
 }

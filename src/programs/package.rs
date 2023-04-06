@@ -35,10 +35,9 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
 
     let manager = Manager::new();
 
-    let mut manager = manager.borrow_mut();
-    let manager = manager.as_mut().unwrap();
-
-    manager.load_from_url(&schema_url, &schema_url, None, default_meta_schema_url)?;
+    manager
+        .borrow_mut()
+        .load_from_url(&schema_url, &schema_url, None, default_meta_schema_url)?;
 
     Ok(())
 }

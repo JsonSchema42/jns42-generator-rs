@@ -6,8 +6,8 @@ use url::Url;
 #[derive(Default)]
 pub struct Manager<'a> {
     loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a> + 'a>>,
-    retrieval_root_node_map: HashMap<&'a Url, &'a Url>,
-    root_node_retrieval_map: HashMap<&'a Url, &'a Url>,
+    retrieval_root_node_map: HashMap<Url, Url>,
+    root_node_retrieval_map: HashMap<Url, Url>,
 }
 
 impl<'a> Manager<'a> {
@@ -83,9 +83,9 @@ impl<'a> Manager<'a> {
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<&'a Url, &'static str> {
-        if let Some(root_node_url) = self.retrieval_root_node_map.get(&retrieval_url) {
-            return Ok(root_node_url);
+    ) -> Result<Url, &'static str> {
+        if let Some(root_node_url) = self.retrieval_root_node_map.get(retrieval_url) {
+            return Ok(root_node_url.clone());
         }
 
         let root_node = self.fetch_root_node_from_url(retrieval_url)?;
@@ -99,11 +99,11 @@ impl<'a> Manager<'a> {
         )?;
 
         self.retrieval_root_node_map
-            .insert(retrieval_url, root_node_url);
+            .insert(retrieval_url.clone(), root_node_url.clone());
         self.root_node_retrieval_map
-            .insert(root_node_url, retrieval_url);
+            .insert(root_node_url.clone(), retrieval_url.clone());
 
-        Ok(root_node_url)
+        Ok(root_node_url.clone())
     }
 
     pub fn fetch_root_node_from_url(

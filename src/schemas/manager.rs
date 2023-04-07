@@ -104,7 +104,7 @@ impl<'a> Manager<'a> {
         self.root_node_retrieval_map
             .insert(root_node_url.clone(), retrieval_url.clone());
 
-        Ok(root_node_url.clone())
+        Ok(root_node_url)
     }
 
     pub fn fetch_root_node_from_url(

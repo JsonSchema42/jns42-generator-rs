@@ -37,7 +37,7 @@ impl Loader for LoaderImpl {
     }
 
     fn get_sub_node_urls(
-        &mut self,
+        &self,
         node: &serde_json::Value,
         node_url: &Url,
         retrieval_url: &Url,

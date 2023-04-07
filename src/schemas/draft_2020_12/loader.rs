@@ -25,8 +25,6 @@ impl<'a> LoaderImpl<'a> {
         node_url: &Url,
         retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
-        let manager = self.manager.upgrade().unwrap();
-
         if let Some(node_ref) = node.select_ref() {
             let node_ref_url = node_url
                 .join(node_ref)
@@ -36,11 +34,10 @@ impl<'a> LoaderImpl<'a> {
                 .map_err(|_error_| "could not build retrieval_ref_url")?;
             retrieval_ref_url.set_fragment(None);
 
-            return manager.borrow_mut().load_from_url(
-                &node_ref_url,
-                &retrieval_ref_url,
-                META_SCHEMA_ID.into(),
-            );
+            let manager = self.manager.upgrade().unwrap();
+            let mut manager = manager.borrow_mut();
+
+            return manager.load_from_url(&node_ref_url, &retrieval_ref_url, META_SCHEMA_ID.into());
         }
 
         Ok(node_url.clone())
@@ -53,6 +50,8 @@ impl<'a> LoaderImpl<'a> {
         retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
         let node_url = Self::get_root_node_url(&node, node_url)?;
+
+        self.load_from_node(&node, &node_url, retrieval_url)?;
 
         self.load_from_sub_nodes(&node, &node_url, retrieval_url, "")?;
 
@@ -69,7 +68,7 @@ impl<'a> LoaderImpl<'a> {
         pointer: &str,
     ) -> Result<(), &'static str> {
         for (sub_pointer, sub_node) in node.select_sub_nodes(pointer) {
-            self.load_from_node(node, node_url, retrieval_url)?;
+            self.load_from_node(sub_node, node_url, retrieval_url)?;
 
             self.load_from_sub_nodes(sub_node, node_url, retrieval_url, sub_pointer.as_str())?;
         }

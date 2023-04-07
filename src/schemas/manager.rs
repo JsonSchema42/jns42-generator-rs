@@ -59,16 +59,13 @@ impl<'a> Manager<'a> {
         manager
     }
 
-    pub fn load_from_root_node(
+    pub fn load_root_node(
         &mut self,
         node: serde_json::Value,
         node_url: &Url,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<Url, &'static str> {
-        let mut meta_schema_id = self.discover_meta_schema_id(&node);
-        if meta_schema_id == MetaSchemaId::Unknown {
-            meta_schema_id = default_meta_schema_id;
-        }
+    ) -> Result<(), &'static str> {
+        let meta_schema_id = self.discover_meta_schema_id(&node, default_meta_schema_id);
 
         let loader = self.loaders.get_mut(&meta_schema_id).unwrap();
 
@@ -76,10 +73,7 @@ impl<'a> Manager<'a> {
 
         loader.load_root_node(node, &node_url)?;
 
-        self.root_node_meta_schema_id_map
-            .insert(node_url.clone(), meta_schema_id);
-
-        Ok(node_url)
+        Ok(())
     }
 
     pub fn load_from_url(
@@ -87,50 +81,53 @@ impl<'a> Manager<'a> {
         node_url: &Url,
         retrieval_url: &Url,
         default_meta_schema_id: MetaSchemaId,
-    ) -> Result<Url, &'static str> {
-        if let Some(root_node_url) = self.retrieval_root_node_map.get(retrieval_url) {
-            return Ok(root_node_url.clone());
+    ) -> Result<(), &'static str> {
+        if self.retrieval_root_node_map.contains_key(retrieval_url) {
+            return Ok(());
         }
 
         let root_node = Self::fetch_json_from_url(retrieval_url)?;
 
-        let mut meta_schema_id = self.discover_meta_schema_id(&root_node);
-        if meta_schema_id == MetaSchemaId::Unknown {
-            meta_schema_id = default_meta_schema_id;
-        }
+        let meta_schema_id = self.discover_meta_schema_id(&root_node, default_meta_schema_id);
 
         let loader = self.loaders.get_mut(&meta_schema_id).unwrap();
 
-        let root_node_url = loader.get_root_node_url(&root_node, node_url)?;
+        let node_url = loader.get_root_node_url(&root_node, node_url)?;
 
         self.retrieval_root_node_map
-            .insert(retrieval_url.clone(), root_node_url.clone());
+            .insert(retrieval_url.clone(), node_url.clone());
         self.root_node_retrieval_map
-            .insert(root_node_url.clone(), retrieval_url.clone());
+            .insert(node_url.clone(), retrieval_url.clone());
+        self.root_node_meta_schema_id_map
+            .insert(node_url.clone(), meta_schema_id);
 
         for (sub_node_url, sub_retrieval_url) in
-            loader.get_sub_node_urls(&root_node, &root_node_url, retrieval_url)?
+            loader.get_sub_node_urls(&root_node, &node_url, retrieval_url)?
         {
             self.load_from_url(&sub_node_url, &sub_retrieval_url, meta_schema_id)?;
         }
 
-        self.load_from_root_node(root_node, node_url, default_meta_schema_id)?;
+        self.load_root_node(root_node, &node_url, default_meta_schema_id)?;
 
-        Ok(root_node_url)
+        Ok(())
     }
 
     pub fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: Box<dyn Loader<'a> + 'a>) {
         self.loaders.insert(meta_schema_id, loader);
     }
 
-    fn discover_meta_schema_id(&self, node: &serde_json::Value) -> MetaSchemaId {
+    fn discover_meta_schema_id(
+        &self,
+        node: &serde_json::Value,
+        default_meta_schema_id: MetaSchemaId,
+    ) -> MetaSchemaId {
         for (schema_id, loader) in self.loaders.iter() {
             if loader.is_schema_root_node(node) {
                 return *schema_id;
             }
         }
 
-        MetaSchemaId::Unknown
+        default_meta_schema_id
     }
 
     fn fetch_json_from_url(url: &Url) -> Result<serde_json::Value, &'static str> {

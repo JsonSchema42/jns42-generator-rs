@@ -37,7 +37,7 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         todo!()
     }
 
-    fn get_sub_urls(
+    fn get_sub_node_urls(
         &mut self,
         _node: &serde_json::Value,
         _node_url: &Url,

@@ -9,7 +9,7 @@ pub trait Loader<'a> {
         node_url: &Url,
     ) -> Result<(), &'static str>;
 
-    fn get_sub_urls(
+    fn get_sub_node_urls(
         &mut self,
         node: &serde_json::Value,
         node_url: &Url,

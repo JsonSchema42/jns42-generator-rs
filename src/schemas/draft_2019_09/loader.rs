@@ -15,7 +15,7 @@ impl LoaderImpl {
     }
 }
 
-impl Loader for LoaderImpl {
+impl<'a> Loader<'a> for LoaderImpl {
     fn is_schema_root_node(&self, node: &serde_json::Value) -> bool {
         if let Some(schema) = node.select_schema() {
             return schema == META_SCHEMA_ID;
@@ -29,6 +29,10 @@ impl Loader for LoaderImpl {
         _node: serde_json::Value,
         _node_url: &Url,
     ) -> Result<(), &'static str> {
+        todo!()
+    }
+
+    fn index_root_node(&'a mut self, node_url: &Url) -> Result<(), &'static str> {
         todo!()
     }
 

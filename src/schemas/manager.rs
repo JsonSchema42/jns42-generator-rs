@@ -1,11 +1,14 @@
-use super::{loader::Loader, meta::MetaSchemaId};
+use super::{
+    loader::{Loader, LoaderBox},
+    meta::MetaSchemaId,
+};
 use crate::schemas;
 use std::{collections::HashMap, fs::File};
 use url::Url;
 
 #[derive(Default)]
 pub struct Manager<'a> {
-    loaders: HashMap<MetaSchemaId, Box<dyn Loader + 'a>>,
+    loaders: HashMap<MetaSchemaId, LoaderBox<'a>>,
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
     root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
@@ -92,7 +95,7 @@ impl<'a> Manager<'a> {
         Ok(())
     }
 
-    pub fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: Box<dyn Loader + 'a>) {
+    pub fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: LoaderBox<'a>) {
         self.loaders.insert(meta_schema_id, loader);
     }
 

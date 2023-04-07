@@ -5,17 +5,18 @@ use std::collections::HashMap;
 use url::Url;
 
 #[derive(Default)]
-pub struct LoaderImpl {
+pub struct LoaderImpl<'a> {
     root_node_map: HashMap<Url, serde_json::Value>,
+    _node_map: HashMap<Url, &'a serde_json::Value>,
 }
 
-impl LoaderImpl {
+impl<'a> LoaderImpl<'a> {
     pub fn new() -> Self {
         Self::default()
     }
 }
 
-impl Loader for LoaderImpl {
+impl<'a> Loader<'a> for LoaderImpl<'a> {
     fn is_schema_root_node(&self, node: &serde_json::Value) -> bool {
         if let Some(schema) = node.select_schema() {
             return schema == META_SCHEMA_ID;
@@ -34,6 +35,10 @@ impl Loader for LoaderImpl {
         }
 
         Ok(())
+    }
+
+    fn index_root_node(&'a mut self, node_url: &Url) -> Result<(), &'static str> {
+        todo!()
     }
 
     fn get_sub_node_urls(

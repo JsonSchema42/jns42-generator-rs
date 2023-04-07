@@ -19,16 +19,19 @@ impl<'a> LoaderImpl<'a> {
         }
     }
 
-    fn load_from_node(
+    fn load_from_root_node(
         &mut self,
-        node: &serde_json::Value,
+        node: serde_json::Value,
         node_url: &Url,
         retrieval_url: &Url,
-        pointer: &str,
     ) -> Result<Url, &'static str> {
-        let mut node_url = node_url.clone();
+        let node_url = Self::get_root_node_url(&node, node_url)?;
 
-        if let Some(node_ref) = node.select_ref() {
+        for node_ref in node
+            .select_all_sub_nodes("")
+            .iter()
+            .filter_map(|(_sub_pointer, sub_node)| sub_node.select_ref())
+        {
             let node_ref_url = node_url
                 .join(node_ref)
                 .map_err(|_error_| "could not build node_ref_url")?;
@@ -40,48 +43,12 @@ impl<'a> LoaderImpl<'a> {
             let manager = self.manager.upgrade().unwrap();
             let mut manager = manager.borrow_mut();
 
-            node_url =
-                manager.load_from_url(&node_ref_url, &retrieval_ref_url, META_SCHEMA_ID.into())?;
+            manager.load_from_url(&node_ref_url, &retrieval_ref_url, META_SCHEMA_ID.into())?;
         }
-
-        self.load_from_sub_nodes(node, &node_url, retrieval_url, pointer)?;
-
-        Ok(node_url)
-    }
-
-    fn load_from_root_node(
-        &mut self,
-        node: serde_json::Value,
-        node_url: &Url,
-        retrieval_url: &Url,
-    ) -> Result<Url, &'static str> {
-        let node_url = Self::get_root_node_url(&node, node_url)?;
-
-        self.load_from_node(&node, &node_url, retrieval_url, "")?;
 
         self.root_node_map.insert(node_url.clone(), node);
 
         Ok(node_url)
-    }
-
-    fn load_from_sub_nodes(
-        &mut self,
-        node: &serde_json::Value,
-        node_url: &Url,
-        retrieval_url: &Url,
-        pointer: &str,
-    ) -> Result<(), &'static str> {
-        for (sub_pointer, sub_node) in node.select_sub_nodes(pointer) {
-            let mut sub_node_url = node_url.clone();
-
-            if !sub_pointer.is_empty() {
-                sub_node_url.set_fragment(Some(format!("#{}", sub_pointer).as_str()));
-            }
-
-            self.load_from_node(sub_node, &sub_node_url, retrieval_url, &sub_pointer)?;
-        }
-
-        Ok(())
     }
 
     fn get_root_node_url(

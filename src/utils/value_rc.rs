@@ -89,19 +89,19 @@ impl<'de> de::Visitor<'de> for ValueRcVisitor {
         Ok(ValueRc::Bool(result))
     }
 
-    fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
+    fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        let result = f64::from(value);
+        let result = value as f64;
         Ok(ValueRc::Float(result))
     }
 
-    fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
+    fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        let result = f64::from(value);
+        let result = value as f64;
         Ok(ValueRc::Float(result))
     }
 

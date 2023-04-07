@@ -1,21 +1,14 @@
-use super::loader::SchemaNode;
-
-pub trait JsonValueSelectors {
-    fn schema(&self) -> Option<&str>;
+pub trait Selectors {
+    fn select_schema(&self) -> Option<&str>;
+    fn select_id(&self) -> Option<&str>;
 }
 
-impl JsonValueSelectors for serde_json::Value {
-    fn schema(&self) -> Option<&str> {
+impl Selectors for serde_json::Value {
+    fn select_schema(&self) -> Option<&str> {
         self.as_object()?.get("$schema")?.as_str()
     }
-}
 
-pub trait SchemaNodeSelectors {
-    fn id(&self) -> Option<&str>;
-}
-
-impl SchemaNodeSelectors for SchemaNode {
-    fn id(&self) -> Option<&str> {
+    fn select_id(&self) -> Option<&str> {
         self.as_object()?.get("$id")?.as_str()
     }
 }

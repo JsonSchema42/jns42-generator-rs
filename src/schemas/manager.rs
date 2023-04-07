@@ -8,7 +8,7 @@ pub struct Manager<'a> {
     loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a> + 'a>>,
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
-    root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
+    _root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
 }
 
 impl<'a> Manager<'a> {

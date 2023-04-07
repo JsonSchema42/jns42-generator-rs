@@ -32,7 +32,7 @@ impl<'a> Loader<'a> for LoaderImpl {
         todo!()
     }
 
-    fn index_root_node(&'a mut self, node_url: &Url) -> Result<(), &'static str> {
+    fn index_root_node(&'a mut self, node_url: &Url) -> Result<Vec<Url>, &'static str> {
         todo!()
     }
 

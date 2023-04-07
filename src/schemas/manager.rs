@@ -3,15 +3,15 @@ use super::{
     meta::MetaSchemaId,
 };
 use crate::schemas;
-use std::{collections::HashMap, fs::File};
+use std::{cell::RefCell, collections::HashMap, fs::File};
 use url::Url;
 
 #[derive(Default)]
 pub struct Manager<'a> {
     loaders: HashMap<MetaSchemaId, LoaderBox<'a>>,
-    retrieval_root_node_map: HashMap<Url, Url>,
-    root_node_retrieval_map: HashMap<Url, Url>,
-    root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
+    retrieval_root_node_map: RefCell<HashMap<Url, Url>>,
+    root_node_retrieval_map: RefCell<HashMap<Url, Url>>,
+    root_node_meta_schema_id_map: RefCell<HashMap<Url, MetaSchemaId>>,
 }
 
 impl<'a> Manager<'a> {
@@ -43,7 +43,7 @@ impl<'a> Manager<'a> {
     }
 
     pub fn load_root_node(
-        &mut self,
+        &'a mut self,
         node: serde_json::Value,
         node_url: &Url,
         default_meta_schema_id: MetaSchemaId,
@@ -55,17 +55,22 @@ impl<'a> Manager<'a> {
         let node_url = loader.get_root_node_url(&node, node_url)?;
 
         loader.load_root_node(node, &node_url)?;
+        loader.index_root_node(&node_url);
 
         Ok(())
     }
 
     pub fn load_from_url(
-        &mut self,
+        &'a mut self,
         node_url: &Url,
         retrieval_url: &Url,
         default_meta_schema_id: MetaSchemaId,
     ) -> Result<(), &'static str> {
-        if self.retrieval_root_node_map.contains_key(retrieval_url) {
+        if self
+            .retrieval_root_node_map
+            .borrow()
+            .contains_key(retrieval_url)
+        {
             return Ok(());
         }
 
@@ -73,22 +78,25 @@ impl<'a> Manager<'a> {
 
         let meta_schema_id = self.discover_meta_schema_id(&root_node, default_meta_schema_id);
 
-        let loader = self.loaders.get_mut(&meta_schema_id).unwrap();
+        let loader = self.loaders.get(&meta_schema_id).unwrap();
 
         let node_url = loader.get_root_node_url(&root_node, node_url)?;
 
         self.retrieval_root_node_map
+            .borrow_mut()
             .insert(retrieval_url.clone(), node_url.clone());
         self.root_node_retrieval_map
+            .borrow_mut()
             .insert(node_url.clone(), retrieval_url.clone());
         self.root_node_meta_schema_id_map
+            .borrow_mut()
             .insert(node_url.clone(), meta_schema_id);
 
-        for (sub_node_url, sub_retrieval_url) in
-            loader.get_sub_node_urls(&root_node, &node_url, retrieval_url)?
-        {
-            self.load_from_url(&sub_node_url, &sub_retrieval_url, meta_schema_id)?;
-        }
+        // for (sub_node_url, sub_retrieval_url) in
+        //     loader.get_sub_node_urls(&root_node, &node_url, retrieval_url)?
+        // {
+        //     self.load_from_url(&sub_node_url, &sub_retrieval_url, meta_schema_id)?;
+        // }
 
         self.load_root_node(root_node, &node_url, default_meta_schema_id)?;
 

@@ -7,7 +7,7 @@ use url::Url;
 #[derive(Default)]
 pub struct LoaderImpl<'a> {
     root_node_map: HashMap<Url, serde_json::Value>,
-    _node_map: HashMap<Url, &'a serde_json::Value>,
+    node_map: HashMap<Url, &'a serde_json::Value>,
 }
 
 impl<'a> LoaderImpl<'a> {
@@ -37,8 +37,27 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         Ok(())
     }
 
-    fn index_root_node(&'a mut self, node_url: &Url) -> Result<(), &'static str> {
-        todo!()
+    fn index_root_node(&'a mut self, root_node_url: &Url) -> Result<Vec<Url>, &'static str> {
+        let mut result = Vec::new();
+
+        let root_node = self
+            .root_node_map
+            .get(root_node_url)
+            .ok_or("root_node not found")?;
+
+        self.node_map.insert(root_node_url.clone(), root_node);
+        result.push(root_node_url.clone());
+
+        for (sub_pointer, sub_node) in root_node.select_all_sub_nodes("").into_iter() {
+            let sub_node_url = root_node_url
+                .join(format!("#{}", sub_pointer).as_str())
+                .map_err(|_error| "could not build sub_node_url")?;
+
+            self.node_map.insert(sub_node_url.clone(), sub_node);
+            result.push(sub_node_url);
+        }
+
+        Ok(result)
     }
 
     fn get_sub_node_urls(
@@ -52,7 +71,7 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
 
         for node_ref in node
             .select_all_sub_nodes("")
-            .iter()
+            .into_iter()
             .filter_map(|(_sub_pointer, sub_node)| sub_node.select_ref())
         {
             let node_ref_url = node_url

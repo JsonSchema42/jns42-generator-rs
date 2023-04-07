@@ -11,7 +11,7 @@ pub trait Loader<'a> {
         node_url: &Url,
     ) -> Result<(), &'static str>;
 
-    fn index_root_node(&'a mut self, node_url: &Url) -> Result<(), &'static str>;
+    fn index_root_node(&'a mut self, node_url: &Url) -> Result<Vec<Url>, &'static str>;
 
     fn get_sub_node_urls(
         &self,

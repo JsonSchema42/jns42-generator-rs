@@ -2,9 +2,10 @@ use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
 use crate::schemas::loader::Loader;
 use crate::schemas::manager::ManagerWeak;
-use crate::schemas::meta::MetaSchemaId;
 use std::collections::HashMap;
 use url::Url;
+
+pub type SchemaNode = serde_json::Value;
 
 #[derive(Default)]
 pub struct LoaderImpl<'a> {
@@ -19,6 +20,14 @@ impl<'a> LoaderImpl<'a> {
             ..Default::default()
         }
     }
+
+    fn load_from_root_node(
+        &self,
+        _node: SchemaNode,
+        _node_url: &'a Url,
+    ) -> Result<Url, &'static str> {
+        todo!()
+    }
 }
 
 impl<'a> Loader<'a> for LoaderImpl<'a> {
@@ -31,12 +40,9 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
 
     fn load_from_root_node(
         &self,
-        _node: serde_json::Value,
-        _node_url: &'a Url,
-        _retrieval_url: &'a Url,
-        _referencing_url: Option<&'a Url>,
-        _default_meta_schema_id: MetaSchemaId,
+        node: serde_json::Value,
+        node_url: &'a Url,
     ) -> Result<Url, &'static str> {
-        todo!()
+        self.load_from_root_node(node, node_url)
     }
 }

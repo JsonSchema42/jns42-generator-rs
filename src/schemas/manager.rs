@@ -63,8 +63,6 @@ impl<'a> Manager<'a> {
         &mut self,
         node: serde_json::Value,
         node_url: &'a Url,
-        retrieval_url: &'a Url,
-        referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
         let mut meta_schema_id = self.discover_meta_schema_id(&node);
@@ -74,13 +72,7 @@ impl<'a> Manager<'a> {
 
         let loader = self.loaders.get(&meta_schema_id).unwrap();
 
-        let node_url = loader.load_from_root_node(
-            node,
-            node_url,
-            retrieval_url,
-            referencing_url,
-            default_meta_schema_id,
-        )?;
+        let node_url = loader.load_from_root_node(node, node_url)?;
 
         self.root_node_meta_schema_id_map
             .insert(node_url.clone(), meta_schema_id);
@@ -92,7 +84,6 @@ impl<'a> Manager<'a> {
         &mut self,
         node_url: &'a Url,
         retrieval_url: &'a Url,
-        referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
         if let Some(root_node_url) = self.retrieval_root_node_map.get(retrieval_url) {
@@ -101,13 +92,8 @@ impl<'a> Manager<'a> {
 
         let root_node = Self::fetch_json_from_url(retrieval_url)?;
 
-        let root_node_url = self.load_from_root_node(
-            root_node,
-            node_url,
-            retrieval_url,
-            referencing_url,
-            default_meta_schema_id,
-        )?;
+        let root_node_url =
+            self.load_from_root_node(root_node, node_url, default_meta_schema_id)?;
 
         self.retrieval_root_node_map
             .insert(retrieval_url.clone(), root_node_url.clone());

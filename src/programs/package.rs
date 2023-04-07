@@ -37,7 +37,7 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
 
     manager
         .borrow_mut()
-        .load_from_url(&schema_url, &schema_url, None, default_meta_schema_url)?;
+        .load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;
 
     Ok(())
 }

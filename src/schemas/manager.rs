@@ -1,59 +1,39 @@
 use super::{loader::Loader, meta::MetaSchemaId};
 use crate::schemas;
-use std::{
-    cell::RefCell,
-    collections::HashMap,
-    fs::File,
-    rc::{Rc, Weak},
-};
+use std::{collections::HashMap, fs::File};
 use url::Url;
-
-pub type ManagerWeak<'a> = Weak<RefCell<Manager<'a>>>;
 
 #[derive(Default)]
 pub struct Manager<'a> {
-    loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a> + 'a>>,
+    loaders: HashMap<MetaSchemaId, Box<dyn Loader + 'a>>,
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
     root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
 }
 
 impl<'a> Manager<'a> {
-    pub fn new() -> Rc<RefCell<Self>> {
-        let manager = Self::default();
+    pub fn new() -> Self {
+        let mut manager = Self::default();
 
-        let manager = RefCell::new(manager);
-        let manager = Rc::new(manager);
-
-        manager.borrow_mut().add_loader(
+        manager.add_loader(
             MetaSchemaId::Draft202012,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                Rc::downgrade(&manager),
-            )),
+            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
         );
-        manager.borrow_mut().add_loader(
+        manager.add_loader(
             MetaSchemaId::Draft201909,
-            Box::new(schemas::draft_2019_09::loader::LoaderImpl::new(
-                Rc::downgrade(&manager),
-            )),
+            Box::new(schemas::draft_2019_09::loader::LoaderImpl::new()),
         );
-        manager.borrow_mut().add_loader(
+        manager.add_loader(
             MetaSchemaId::Draft07,
-            Box::new(schemas::draft_07::loader::LoaderImpl::new(Rc::downgrade(
-                &manager,
-            ))),
+            Box::new(schemas::draft_07::loader::LoaderImpl::new()),
         );
-        manager.borrow_mut().add_loader(
+        manager.add_loader(
             MetaSchemaId::Draft06,
-            Box::new(schemas::draft_06::loader::LoaderImpl::new(Rc::downgrade(
-                &manager,
-            ))),
+            Box::new(schemas::draft_06::loader::LoaderImpl::new()),
         );
-        manager.borrow_mut().add_loader(
+        manager.add_loader(
             MetaSchemaId::Draft04,
-            Box::new(schemas::draft_04::loader::LoaderImpl::new(Rc::downgrade(
-                &manager,
-            ))),
+            Box::new(schemas::draft_04::loader::LoaderImpl::new()),
         );
 
         manager
@@ -112,7 +92,7 @@ impl<'a> Manager<'a> {
         Ok(())
     }
 
-    pub fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: Box<dyn Loader<'a> + 'a>) {
+    pub fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: Box<dyn Loader + 'a>) {
         self.loaders.insert(meta_schema_id, loader);
     }
 

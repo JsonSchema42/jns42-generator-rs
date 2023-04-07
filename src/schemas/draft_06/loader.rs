@@ -1,26 +1,21 @@
 use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
 use crate::schemas::loader::Loader;
-use crate::schemas::manager::ManagerWeak;
 use std::collections::HashMap;
 use url::Url;
 
 #[derive(Default)]
-pub struct LoaderImpl<'a> {
+pub struct LoaderImpl {
     _root_node_map: HashMap<Url, serde_json::Value>,
-    _manager: ManagerWeak<'a>,
 }
 
-impl<'a> LoaderImpl<'a> {
-    pub fn new(manager: ManagerWeak<'a>) -> Self {
-        Self {
-            _manager: manager,
-            ..Default::default()
-        }
+impl LoaderImpl {
+    pub fn new() -> Self {
+        Self::default()
     }
 }
 
-impl<'a> Loader<'a> for LoaderImpl<'a> {
+impl Loader for LoaderImpl {
     fn is_schema_root_node(&self, node: &serde_json::Value) -> bool {
         if let Some(schema) = node.select_schema() {
             return schema == META_SCHEMA_ID;

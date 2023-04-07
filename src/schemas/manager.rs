@@ -61,13 +61,13 @@ impl<'a> Manager<'a> {
 
     pub fn load_from_root_node(
         &mut self,
-        node: &serde_json::Value,
+        node: serde_json::Value,
         node_url: &'a Url,
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
-        let mut meta_schema_id = self.discover_meta_schema_id(node);
+        let mut meta_schema_id = self.discover_meta_schema_id(&node);
         if meta_schema_id == MetaSchemaId::Unknown {
             meta_schema_id = default_meta_schema_id;
         }
@@ -102,7 +102,7 @@ impl<'a> Manager<'a> {
         let root_node = Self::fetch_json_from_url(retrieval_url)?;
 
         let root_node_url = self.load_from_root_node(
-            &root_node,
+            root_node,
             node_url,
             retrieval_url,
             referencing_url,

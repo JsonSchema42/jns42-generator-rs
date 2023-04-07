@@ -31,7 +31,7 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
 
     fn load_from_root_node(
         &self,
-        _node: &serde_json::Value,
+        _node: serde_json::Value,
         _node_url: &'a Url,
         _retrieval_url: &'a Url,
         _referencing_url: Option<&'a Url>,

@@ -6,7 +6,7 @@ pub trait Loader<'a> {
 
     fn load_from_root_node(
         &self,
-        node: &serde_json::Value,
+        node: serde_json::Value,
         node_url: &'a Url,
         retrieval_url: &'a Url,
         referencing_url: Option<&'a Url>,

@@ -26,13 +26,22 @@ impl<'a> LoaderImpl<'a> {
         node: SchemaNode,
         node_url: &'a Url,
     ) -> Result<Url, &'static str> {
-        let mut node_url = node_url.clone();
+        let node_url = Self::get_root_node_url(&node, node_url)?;
+
+        self.root_node_map.insert(node_url.clone(), node);
+
+        Ok(node_url)
+    }
+
+    fn get_root_node_url(node: &SchemaNode, default_node_url: &Url) -> Result<Url, &'static str> {
+        let node_url;
+
         let id = node.id();
         if let Some(id) = id {
             node_url = id.parse().map_err(|_error| "could not parse id")?;
+        } else {
+            node_url = default_node_url.clone();
         }
-
-        self.root_node_map.insert(node_url.clone(), node);
 
         Ok(node_url)
     }

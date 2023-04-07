@@ -22,9 +22,10 @@ impl<'a> LoaderImpl<'a> {
     fn load_from_root_node(
         &mut self,
         node: serde_json::Value,
-        node_url: &'a Url,
+        node_url: &Url,
+        retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
-        let node_url = Self::get_root_node_url(&node, node_url)?;
+        let node_url = Self::get_root_node_url(&node, node_url, retrieval_url)?;
 
         self.root_node_map.insert(node_url.clone(), node);
 
@@ -34,6 +35,7 @@ impl<'a> LoaderImpl<'a> {
     fn get_root_node_url(
         node: &serde_json::Value,
         default_node_url: &Url,
+        _retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
         let node_url;
 
@@ -60,8 +62,9 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
     fn load_from_root_node(
         &mut self,
         node: serde_json::Value,
-        node_url: &'a Url,
+        node_url: &Url,
+        retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
-        self.load_from_root_node(node, node_url)
+        self.load_from_root_node(node, node_url, retrieval_url)
     }
 }

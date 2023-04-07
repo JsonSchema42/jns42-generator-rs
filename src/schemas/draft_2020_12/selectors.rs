@@ -1,10 +1,10 @@
-use std::borrow::Cow;
-
 use crate::utils::json_pointer::join_json_pointer;
 
 pub trait Selectors {
     fn select_schema(&self) -> Option<&str>;
     fn select_id(&self) -> Option<&str>;
+    fn select_ref(&self) -> Option<&str>;
+
     fn select_sub_nodes(&self, node_pointer: &str) -> Vec<(String, &serde_json::Value)>;
 
     fn select_sub_node_def_entries(
@@ -48,6 +48,10 @@ impl Selectors for serde_json::Value {
 
     fn select_id(&self) -> Option<&str> {
         self.as_object()?.get("$id")?.as_str()
+    }
+
+    fn select_ref(&self) -> Option<&str> {
+        self.as_object()?.get("$ref")?.as_str()
     }
 
     fn select_sub_nodes(&self, node_pointer: &str) -> Vec<(String, &serde_json::Value)> {

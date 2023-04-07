@@ -5,8 +5,6 @@ use crate::schemas::manager::ManagerWeak;
 use std::collections::HashMap;
 use url::Url;
 
-pub type SchemaNode = serde_json::Value;
-
 #[derive(Default)]
 pub struct LoaderImpl<'a> {
     root_node_map: HashMap<Url, serde_json::Value>,
@@ -21,30 +19,65 @@ impl<'a> LoaderImpl<'a> {
         }
     }
 
-    fn load_from_url(
+    fn load_from_node(
         &mut self,
-        node_url: &'a Url,
-        retrieval_url: &'a Url,
+        node: &serde_json::Value,
+        node_url: &Url,
+        retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
         let manager = self.manager.upgrade().unwrap();
         let mut manager = manager.borrow_mut();
 
-        manager.load_from_url(node_url, retrieval_url, META_SCHEMA_ID.into())
+        if let Some(node_ref) = node.select_ref() {
+            let node_ref_url = node_url
+                .join(node_ref)
+                .map_err(|_error_| "could not build node_ref_url")?;
+            let mut retrieval_ref_url = retrieval_url
+                .join(node_ref)
+                .map_err(|_error_| "could not build retrieval_ref_url")?;
+            retrieval_ref_url.set_fragment(None);
+
+            return manager.load_from_url(&node_ref_url, &retrieval_ref_url, META_SCHEMA_ID.into());
+        }
+
+        Ok(node_url.clone())
     }
 
     fn load_from_root_node(
         &mut self,
-        node: SchemaNode,
-        node_url: &'a Url,
+        node: serde_json::Value,
+        node_url: &Url,
+        retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
         let node_url = Self::get_root_node_url(&node, node_url)?;
+
+        self.load_from_sub_nodes(&node, &node_url, retrieval_url, "")?;
 
         self.root_node_map.insert(node_url.clone(), node);
 
         Ok(node_url)
     }
 
-    fn get_root_node_url(node: &SchemaNode, default_node_url: &Url) -> Result<Url, &'static str> {
+    fn load_from_sub_nodes(
+        &mut self,
+        node: &serde_json::Value,
+        node_url: &Url,
+        retrieval_url: &Url,
+        pointer: &str,
+    ) -> Result<(), &'static str> {
+        for (sub_pointer, sub_node) in node.select_sub_nodes(pointer) {
+            self.load_from_node(node, node_url, retrieval_url)?;
+
+            self.load_from_sub_nodes(sub_node, node_url, retrieval_url, sub_pointer.as_str())?;
+        }
+
+        Ok(())
+    }
+
+    fn get_root_node_url(
+        node: &serde_json::Value,
+        default_node_url: &Url,
+    ) -> Result<Url, &'static str> {
         let node_url;
 
         let id = node.select_id();
@@ -70,8 +103,9 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
     fn load_from_root_node(
         &mut self,
         node: serde_json::Value,
-        node_url: &'a Url,
+        node_url: &Url,
+        retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
-        self.load_from_root_node(node, node_url)
+        self.load_from_root_node(node, node_url, retrieval_url)
     }
 }

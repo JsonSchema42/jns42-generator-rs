@@ -26,7 +26,6 @@ impl<'a> LoaderImpl<'a> {
         retrieval_url: &Url,
     ) -> Result<Url, &'static str> {
         let manager = self.manager.upgrade().unwrap();
-        let mut manager = manager.borrow_mut();
 
         if let Some(node_ref) = node.select_ref() {
             let node_ref_url = node_url
@@ -37,7 +36,11 @@ impl<'a> LoaderImpl<'a> {
                 .map_err(|_error_| "could not build retrieval_ref_url")?;
             retrieval_ref_url.set_fragment(None);
 
-            return manager.load_from_url(&node_ref_url, &retrieval_ref_url, META_SCHEMA_ID.into());
+            return manager.borrow_mut().load_from_url(
+                &node_ref_url,
+                &retrieval_ref_url,
+                META_SCHEMA_ID.into(),
+            );
         }
 
         Ok(node_url.clone())

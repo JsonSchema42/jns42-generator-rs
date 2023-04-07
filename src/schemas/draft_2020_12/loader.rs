@@ -24,7 +24,10 @@ impl<'a> LoaderImpl<'a> {
         node: &serde_json::Value,
         node_url: &Url,
         retrieval_url: &Url,
+        pointer: &str,
     ) -> Result<Url, &'static str> {
+        let mut node_url = node_url.clone();
+
         if let Some(node_ref) = node.select_ref() {
             let node_ref_url = node_url
                 .join(node_ref)
@@ -37,10 +40,13 @@ impl<'a> LoaderImpl<'a> {
             let manager = self.manager.upgrade().unwrap();
             let mut manager = manager.borrow_mut();
 
-            return manager.load_from_url(&node_ref_url, &retrieval_ref_url, META_SCHEMA_ID.into());
+            node_url =
+                manager.load_from_url(&node_ref_url, &retrieval_ref_url, META_SCHEMA_ID.into())?;
         }
 
-        Ok(node_url.clone())
+        self.load_from_sub_nodes(node, &node_url, retrieval_url, pointer)?;
+
+        Ok(node_url)
     }
 
     fn load_from_root_node(
@@ -51,9 +57,7 @@ impl<'a> LoaderImpl<'a> {
     ) -> Result<Url, &'static str> {
         let node_url = Self::get_root_node_url(&node, node_url)?;
 
-        self.load_from_node(&node, &node_url, retrieval_url)?;
-
-        self.load_from_sub_nodes(&node, &node_url, retrieval_url, "")?;
+        self.load_from_node(&node, &node_url, retrieval_url, "")?;
 
         self.root_node_map.insert(node_url.clone(), node);
 
@@ -68,9 +72,13 @@ impl<'a> LoaderImpl<'a> {
         pointer: &str,
     ) -> Result<(), &'static str> {
         for (sub_pointer, sub_node) in node.select_sub_nodes(pointer) {
-            self.load_from_node(sub_node, node_url, retrieval_url)?;
+            let mut sub_node_url = node_url.clone();
 
-            self.load_from_sub_nodes(sub_node, node_url, retrieval_url, sub_pointer.as_str())?;
+            if !sub_pointer.is_empty() {
+                sub_node_url.set_fragment(Some(format!("#{}", sub_pointer).as_str()));
+            }
+
+            self.load_from_node(sub_node, &sub_node_url, retrieval_url, &sub_pointer)?;
         }
 
         Ok(())

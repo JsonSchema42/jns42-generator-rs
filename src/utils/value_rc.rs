@@ -13,30 +13,30 @@ pub enum ValueRc {
 }
 
 impl ValueRc {
-    pub fn as_null(&self) -> Option<()> {
+    pub fn _as_null(&self) -> Option<()> {
         match self {
             ValueRc::Null => Some(()),
             _ => None,
         }
     }
 
-    pub fn as_bool(&self) -> Option<bool> {
+    pub fn _as_bool(&self) -> Option<bool> {
         match self {
             ValueRc::Bool(value) => Some(*value),
             _ => None,
         }
     }
 
-    pub fn as_float(&self) -> Option<f64> {
+    pub fn _as_float(&self) -> Option<f64> {
         match self {
             ValueRc::Float(value) => Some(*value),
             _ => None,
         }
     }
 
-    pub fn as_string(&self) -> Option<&String> {
+    pub fn as_str(&self) -> Option<&str> {
         match self {
-            ValueRc::String(value) => Some(value),
+            ValueRc::String(value) => Some(value.as_str()),
             _ => None,
         }
     }
@@ -72,6 +72,13 @@ impl<'de> de::Visitor<'de> for ValueRcVisitor {
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         write!(formatter, "a value")
+    }
+
+    fn visit_unit<E>(self) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        Ok(ValueRc::Null)
     }
 
     fn visit_bool<E>(self, value: bool) -> Result<Self::Value, E>

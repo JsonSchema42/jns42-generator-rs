@@ -1,5 +1,5 @@
 use super::meta::META_SCHEMA_ID;
-use super::selectors::Selectors;
+use super::selectors::{JsonValueSelectors, SchemaNodeSelectors};
 use crate::schemas::loader::Loader;
 use crate::schemas::manager::ManagerWeak;
 use std::collections::HashMap;
@@ -26,9 +26,15 @@ impl<'a> LoaderImpl<'a> {
         node: SchemaNode,
         node_url: &'a Url,
     ) -> Result<Url, &'static str> {
+        let mut node_url = node_url.clone();
+        let id = node.id();
+        if let Some(id) = id {
+            node_url = id.parse().map_err(|_error| "could not parse id")?;
+        }
+
         self.root_node_map.insert(node_url.clone(), node);
 
-        todo!()
+        Ok(node_url)
     }
 }
 

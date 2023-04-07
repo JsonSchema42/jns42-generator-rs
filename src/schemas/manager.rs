@@ -1,14 +1,21 @@
 use super::{loader::Loader, meta::MetaSchemaId};
 use crate::schemas;
-use std::{cell::RefCell, collections::HashMap, fs::File, rc::Rc};
+use std::{
+    cell::RefCell,
+    collections::HashMap,
+    fs::File,
+    rc::{Rc, Weak},
+};
 use url::Url;
+
+pub type ManagerWeak<'a> = Weak<RefCell<Manager<'a>>>;
 
 #[derive(Default)]
 pub struct Manager<'a> {
     loaders: HashMap<MetaSchemaId, Box<dyn Loader<'a> + 'a>>,
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
-    _root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
+    root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
 }
 
 impl<'a> Manager<'a> {
@@ -53,7 +60,7 @@ impl<'a> Manager<'a> {
     }
 
     pub fn load_from_root_node(
-        &self,
+        &mut self,
         node: &serde_json::Value,
         node_url: &'a Url,
         retrieval_url: &'a Url,
@@ -74,6 +81,9 @@ impl<'a> Manager<'a> {
             referencing_url,
             default_meta_schema_id,
         )?;
+
+        self.root_node_meta_schema_id_map
+            .insert(node_url.clone(), schema_id);
 
         Ok(node_url)
     }

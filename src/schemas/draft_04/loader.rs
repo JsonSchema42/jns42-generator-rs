@@ -9,7 +9,7 @@ pub type SchemaNode = serde_json::Value;
 
 #[derive(Default)]
 pub struct LoaderImpl<'a> {
-    _root_node_map: HashMap<Url, serde_json::Value>,
+    root_node_map: HashMap<Url, serde_json::Value>,
     _manager: ManagerWeak<'a>,
 }
 
@@ -22,10 +22,12 @@ impl<'a> LoaderImpl<'a> {
     }
 
     fn load_from_root_node(
-        &self,
-        _node: SchemaNode,
-        _node_url: &'a Url,
+        &mut self,
+        node: SchemaNode,
+        node_url: &'a Url,
     ) -> Result<Url, &'static str> {
+        self.root_node_map.insert(node_url.clone(), node);
+
         todo!()
     }
 }
@@ -35,11 +37,12 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         if let Some(schema) = node.schema() {
             return schema == META_SCHEMA_ID;
         }
+
         false
     }
 
     fn load_from_root_node(
-        &self,
+        &mut self,
         node: serde_json::Value,
         node_url: &'a Url,
     ) -> Result<Url, &'static str> {

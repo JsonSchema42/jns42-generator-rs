@@ -70,7 +70,7 @@ impl<'a> Manager<'a> {
             meta_schema_id = default_meta_schema_id;
         }
 
-        let loader = self.loaders.get(&meta_schema_id).unwrap();
+        let loader = self.loaders.get_mut(&meta_schema_id).unwrap();
 
         let node_url = loader.load_from_root_node(node, node_url)?;
 

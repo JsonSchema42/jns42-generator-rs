@@ -26,27 +26,27 @@ impl<'a> Manager<'a> {
         );
         manager.borrow_mut().add_loader(
             MetaSchemaId::Draft201909,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
+            Box::new(schemas::draft_2019_09::loader::LoaderImpl::new(
                 Rc::downgrade(&manager),
             )),
         );
         manager.borrow_mut().add_loader(
             MetaSchemaId::Draft07,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                Rc::downgrade(&manager),
-            )),
+            Box::new(schemas::draft_07::loader::LoaderImpl::new(Rc::downgrade(
+                &manager,
+            ))),
         );
         manager.borrow_mut().add_loader(
             MetaSchemaId::Draft06,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                Rc::downgrade(&manager),
-            )),
+            Box::new(schemas::draft_06::loader::LoaderImpl::new(Rc::downgrade(
+                &manager,
+            ))),
         );
         manager.borrow_mut().add_loader(
             MetaSchemaId::Draft04,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new(
-                Rc::downgrade(&manager),
-            )),
+            Box::new(schemas::draft_04::loader::LoaderImpl::new(Rc::downgrade(
+                &manager,
+            ))),
         );
 
         manager

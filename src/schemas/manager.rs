@@ -67,12 +67,12 @@ impl<'a> Manager<'a> {
         referencing_url: Option<&'a Url>,
         default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
-        let mut schema_id = self.discover_schema_id(node);
-        if schema_id == MetaSchemaId::Unknown {
-            schema_id = default_meta_schema_id;
+        let mut meta_schema_id = self.discover_meta_schema_id(node);
+        if meta_schema_id == MetaSchemaId::Unknown {
+            meta_schema_id = default_meta_schema_id;
         }
 
-        let loader = self.loaders.get(&schema_id).unwrap();
+        let loader = self.loaders.get(&meta_schema_id).unwrap();
 
         let node_url = loader.load_from_root_node(
             node,
@@ -83,7 +83,7 @@ impl<'a> Manager<'a> {
         )?;
 
         self.root_node_meta_schema_id_map
-            .insert(node_url.clone(), schema_id);
+            .insert(node_url.clone(), meta_schema_id);
 
         Ok(node_url)
     }
@@ -99,7 +99,7 @@ impl<'a> Manager<'a> {
             return Ok(root_node_url.clone());
         }
 
-        let root_node = self.fetch_root_node_from_url(retrieval_url)?;
+        let root_node = Self::fetch_json_from_url(retrieval_url)?;
 
         let root_node_url = self.load_from_root_node(
             &root_node,
@@ -117,10 +117,21 @@ impl<'a> Manager<'a> {
         Ok(root_node_url)
     }
 
-    pub fn fetch_root_node_from_url(
-        &self,
-        url: &'a Url,
-    ) -> Result<serde_json::Value, &'static str> {
+    pub fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: Box<dyn Loader<'a> + 'a>) {
+        self.loaders.insert(meta_schema_id, loader);
+    }
+
+    fn discover_meta_schema_id(&self, node: &serde_json::Value) -> MetaSchemaId {
+        for (schema_id, loader) in self.loaders.iter() {
+            if loader.is_schema_root_node(node) {
+                return *schema_id;
+            }
+        }
+
+        MetaSchemaId::Unknown
+    }
+
+    fn fetch_json_from_url(url: &'a Url) -> Result<serde_json::Value, &'static str> {
         match url.scheme() {
             "file" => {
                 let path = url.path();
@@ -133,20 +144,6 @@ impl<'a> Manager<'a> {
             }
             _ => Err("not supported"),
         }
-    }
-
-    pub fn discover_schema_id(&self, node: &serde_json::Value) -> MetaSchemaId {
-        for (schema_id, loader) in self.loaders.iter() {
-            if loader.is_schema_root_node(node) {
-                return *schema_id;
-            }
-        }
-
-        MetaSchemaId::Unknown
-    }
-
-    fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: Box<dyn Loader<'a> + 'a>) {
-        self.loaders.insert(meta_schema_id, loader);
     }
 }
 

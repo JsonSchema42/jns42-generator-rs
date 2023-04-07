@@ -1,5 +1,6 @@
 mod programs;
 mod schemas;
+mod utils;
 
 use clap::Parser;
 use programs::{run_program, ProgramOptions};

@@ -63,7 +63,6 @@ impl<'a> Manager<'a> {
         &mut self,
         node: serde_json::Value,
         node_url: &Url,
-        retrieval_url: &Url,
         default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
         let mut meta_schema_id = self.discover_meta_schema_id(&node);
@@ -73,7 +72,9 @@ impl<'a> Manager<'a> {
 
         let loader = self.loaders.get_mut(&meta_schema_id).unwrap();
 
-        let node_url = loader.load_from_root_node(node, node_url, retrieval_url)?;
+        let node_url = loader.get_root_node_url(&node, node_url)?;
+
+        loader.load_root_node(node, &node_url)?;
 
         self.root_node_meta_schema_id_map
             .insert(node_url.clone(), meta_schema_id);
@@ -93,13 +94,27 @@ impl<'a> Manager<'a> {
 
         let root_node = Self::fetch_json_from_url(retrieval_url)?;
 
-        let root_node_url =
-            self.load_from_root_node(root_node, node_url, retrieval_url, default_meta_schema_id)?;
+        let mut meta_schema_id = self.discover_meta_schema_id(&root_node);
+        if meta_schema_id == MetaSchemaId::Unknown {
+            meta_schema_id = default_meta_schema_id;
+        }
+
+        let loader = self.loaders.get_mut(&meta_schema_id).unwrap();
+
+        let root_node_url = loader.get_root_node_url(&root_node, node_url)?;
+
+        for (sub_node_url, sub_retrieval_url) in
+            loader.get_sub_urls(&root_node, &root_node_url, retrieval_url)?
+        {
+            self.load_from_url(&sub_node_url, &sub_retrieval_url, default_meta_schema_id);
+        }
 
         self.retrieval_root_node_map
             .insert(retrieval_url.clone(), root_node_url.clone());
         self.root_node_retrieval_map
             .insert(root_node_url.clone(), retrieval_url.clone());
+
+        self.load_from_root_node(root_node, node_url, default_meta_schema_id)?;
 
         Ok(root_node_url)
     }

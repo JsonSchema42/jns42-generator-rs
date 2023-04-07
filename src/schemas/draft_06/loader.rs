@@ -18,36 +18,6 @@ impl<'a> LoaderImpl<'a> {
             ..Default::default()
         }
     }
-
-    fn load_from_root_node(
-        &mut self,
-        node: serde_json::Value,
-        node_url: &Url,
-        retrieval_url: &Url,
-    ) -> Result<Url, &'static str> {
-        let node_url = Self::get_root_node_url(&node, node_url, retrieval_url)?;
-
-        self.root_node_map.insert(node_url.clone(), node);
-
-        Ok(node_url)
-    }
-
-    fn get_root_node_url(
-        node: &serde_json::Value,
-        default_node_url: &Url,
-        _retrieval_url: &Url,
-    ) -> Result<Url, &'static str> {
-        let node_url;
-
-        let id = node.select_id();
-        if let Some(id) = id {
-            node_url = id.parse().map_err(|_error| "could not parse id")?;
-        } else {
-            node_url = default_node_url.clone();
-        }
-
-        Ok(node_url)
-    }
 }
 
 impl<'a> Loader<'a> for LoaderImpl<'a> {
@@ -59,12 +29,28 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         false
     }
 
-    fn load_from_root_node(
+    fn load_root_node(
         &mut self,
-        node: serde_json::Value,
-        node_url: &Url,
-        retrieval_url: &Url,
+        _node: serde_json::Value,
+        _node_url: &Url,
+    ) -> Result<(), &'static str> {
+        todo!()
+    }
+
+    fn get_sub_urls(
+        &mut self,
+        _node: &serde_json::Value,
+        _node_url: &Url,
+        _retrieval_url: &Url,
+    ) -> Result<Vec<(Url, Url)>, &'static str> {
+        todo!()
+    }
+
+    fn get_root_node_url(
+        &self,
+        _node: &serde_json::Value,
+        _default_node_url: &Url,
     ) -> Result<Url, &'static str> {
-        self.load_from_root_node(node, node_url, retrieval_url)
+        todo!()
     }
 }

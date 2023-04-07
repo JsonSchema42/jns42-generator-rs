@@ -23,9 +23,20 @@ impl<'a> LoaderImpl<'a> {
         &mut self,
         node: serde_json::Value,
         node_url: &Url,
+    ) -> Result<(), &'static str> {
+        self.root_node_map.insert(node_url.clone(), node);
+
+        Ok(())
+    }
+
+    pub fn get_sub_urls(
+        &mut self,
+        node: &serde_json::Value,
+        node_url: &Url,
         retrieval_url: &Url,
-    ) -> Result<Url, &'static str> {
-        let node_url = Self::get_root_node_url(&node, node_url)?;
+    ) -> Result<Vec<(Url, Url)>, &'static str> {
+        let node_url = self.get_root_node_url(node, node_url)?;
+        let mut result = Vec::new();
 
         for node_ref in node
             .select_all_sub_nodes("")
@@ -40,18 +51,14 @@ impl<'a> LoaderImpl<'a> {
                 .map_err(|_error_| "could not build retrieval_ref_url")?;
             retrieval_ref_url.set_fragment(None);
 
-            let manager = self.manager.upgrade().unwrap();
-            let mut manager = manager.borrow_mut();
-
-            manager.load_from_url(&node_ref_url, &retrieval_ref_url, META_SCHEMA_ID.into())?;
+            result.push((node_ref_url, retrieval_ref_url));
         }
 
-        self.root_node_map.insert(node_url.clone(), node);
-
-        Ok(node_url)
+        Ok(result)
     }
 
     fn get_root_node_url(
+        &self,
         node: &serde_json::Value,
         default_node_url: &Url,
     ) -> Result<Url, &'static str> {
@@ -77,12 +84,28 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
         false
     }
 
-    fn load_from_root_node(
+    fn load_root_node(
         &mut self,
         node: serde_json::Value,
         node_url: &Url,
+    ) -> Result<(), &'static str> {
+        self.load_from_root_node(node, node_url)
+    }
+
+    fn get_sub_urls(
+        &mut self,
+        node: &serde_json::Value,
+        node_url: &Url,
         retrieval_url: &Url,
+    ) -> Result<Vec<(Url, Url)>, &'static str> {
+        self.get_sub_urls(node, node_url, retrieval_url)
+    }
+
+    fn get_root_node_url(
+        &self,
+        node: &serde_json::Value,
+        default_node_url: &Url,
     ) -> Result<Url, &'static str> {
-        self.load_from_root_node(node, node_url, retrieval_url)
+        self.get_root_node_url(node, default_node_url)
     }
 }

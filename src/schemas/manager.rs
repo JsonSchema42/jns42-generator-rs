@@ -106,7 +106,7 @@ impl<'a> Manager<'a> {
         for (sub_node_url, sub_retrieval_url) in
             loader.get_sub_urls(&root_node, &root_node_url, retrieval_url)?
         {
-            self.load_from_url(&sub_node_url, &sub_retrieval_url, default_meta_schema_id);
+            self.load_from_url(&sub_node_url, &sub_retrieval_url, default_meta_schema_id)?;
         }
 
         self.retrieval_root_node_map

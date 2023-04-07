@@ -8,13 +8,13 @@ use url::Url;
 #[derive(Default)]
 pub struct LoaderImpl<'a> {
     root_node_map: HashMap<Url, serde_json::Value>,
-    manager: ManagerWeak<'a>,
+    _manager: ManagerWeak<'a>,
 }
 
 impl<'a> LoaderImpl<'a> {
     pub fn new(manager: ManagerWeak<'a>) -> Self {
         Self {
-            manager,
+            _manager: manager,
             ..Default::default()
         }
     }

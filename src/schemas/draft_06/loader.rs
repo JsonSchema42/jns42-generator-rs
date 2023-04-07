@@ -7,7 +7,7 @@ use url::Url;
 
 #[derive(Default)]
 pub struct LoaderImpl<'a> {
-    root_node_map: HashMap<Url, serde_json::Value>,
+    _root_node_map: HashMap<Url, serde_json::Value>,
     _manager: ManagerWeak<'a>,
 }
 

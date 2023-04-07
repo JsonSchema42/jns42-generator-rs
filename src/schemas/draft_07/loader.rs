@@ -10,14 +10,14 @@ use url::Url;
 
 #[derive(Default)]
 pub struct LoaderImpl<'a> {
-    root_node_map: HashMap<Url, serde_json::Value>,
-    manager: Weak<RefCell<Manager<'a>>>,
+    _root_node_map: HashMap<Url, serde_json::Value>,
+    _manager: Weak<RefCell<Manager<'a>>>,
 }
 
 impl<'a> LoaderImpl<'a> {
     pub fn new(manager: Weak<RefCell<Manager<'a>>>) -> Self {
         Self {
-            manager,
+            _manager: manager,
             ..Default::default()
         }
     }
@@ -33,11 +33,11 @@ impl<'a> Loader<'a> for LoaderImpl<'a> {
 
     fn load_from_root_node(
         &self,
-        node: &serde_json::Value,
-        node_url: &'a Url,
-        retrieval_url: &'a Url,
-        referencing_url: Option<&'a Url>,
-        default_meta_schema_id: MetaSchemaId,
+        _node: &serde_json::Value,
+        _node_url: &'a Url,
+        _retrieval_url: &'a Url,
+        _referencing_url: Option<&'a Url>,
+        _default_meta_schema_id: MetaSchemaId,
     ) -> Result<Url, &'static str> {
         todo!()
     }

@@ -9,6 +9,7 @@ pub struct Manager<'a> {
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
     root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
+    node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
 }
 
 impl<'a> Manager<'a> {
@@ -49,10 +50,15 @@ impl<'a> Manager<'a> {
 
         let loader = self.loaders.get_mut(&meta_schema_id).unwrap();
 
-        let node_url = loader.get_root_node_url(node.clone(), node_url)?;
+        let root_node_url = loader.get_root_node_url(node.clone(), node_url)?;
 
-        loader.load_root_node(node, &node_url)?;
-        loader.index_root_node(&node_url)?;
+        loader.load_root_node(node, &root_node_url)?;
+        let node_urls = loader.index_root_node(&root_node_url)?;
+
+        for node_url in node_urls.into_iter() {
+            self.node_meta_schema_id_map
+                .insert(node_url, meta_schema_id);
+        }
 
         Ok(())
     }

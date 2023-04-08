@@ -1,5 +1,5 @@
 use crate::{schemas::LoaderContext, utils::Namer};
-use quote::{format_ident, quote, TokenStreamExt};
+use quote::{format_ident, quote, TokenStreamExt, __private::TokenStream};
 use rust_format::Formatter;
 use url::Url;
 
@@ -17,24 +17,7 @@ impl<'a> ModelsRsGenerator<'a> {
     }
 
     pub fn generate_file_content(&self) -> Result<String, &'static str> {
-        let mut tokens = quote! {};
-
-        for node_url in self.loader_context.get_all_node_urls() {
-            let name = self
-                .namer
-                .get_name(&node_url)
-                .ok_or("could not find name")?;
-
-            let name = name.join("_");
-            let name = inflector::cases::classcase::to_class_case(&name);
-            let name = format_ident!("{}", name);
-
-            tokens.append_all(quote! {
-                struct #name{
-
-                }
-            });
-        }
+        let tokens = self.generate_all_models_tokenstream()?;
 
         let formatter = rust_format::RustFmt::new();
 
@@ -43,5 +26,33 @@ impl<'a> ModelsRsGenerator<'a> {
             .or(Err("error while formatting tokens"))?;
 
         Ok(content)
+    }
+
+    fn generate_all_models_tokenstream(&self) -> Result<TokenStream, &'static str> {
+        let mut tokens = quote! {};
+
+        for node_url in self.loader_context.get_all_node_urls() {
+            tokens.append_all(self.generate_model_tokenstream(&node_url));
+        }
+
+        Ok(tokens)
+    }
+
+    fn generate_model_tokenstream(&self, node_url: &Url) -> Result<TokenStream, &'static str> {
+        let name = self.namer.get_name(node_url).ok_or("could not find name")?;
+
+        let name = name.join("_");
+        let name = inflector::cases::classcase::to_class_case(&name);
+        let name = format_ident!("{}", name);
+
+        let mut tokens = quote! {};
+
+        tokens.append_all(quote! {
+            pub struct #name{
+
+            }
+        });
+
+        Ok(tokens)
     }
 }

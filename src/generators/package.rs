@@ -4,14 +4,14 @@ use std::{fs, path::PathBuf};
 use super::{cargo_toml::CargoTomlGenerator, models_rs::ModelsRsGenerator};
 
 pub struct PackageGenerator<'a> {
-    cargo_toml_generator: CargoTomlGenerator<'a>,
+    cargo_toml_generator: CargoTomlGenerator,
     models_rs_generator: ModelsRsGenerator<'a>,
 }
 
 impl<'a> PackageGenerator<'a> {
     pub fn new(schema_loader: &'a LoaderContext<'a>) -> Self {
         Self {
-            cargo_toml_generator: CargoTomlGenerator::new(schema_loader),
+            cargo_toml_generator: CargoTomlGenerator::new(),
             models_rs_generator: ModelsRsGenerator::new(schema_loader),
         }
     }

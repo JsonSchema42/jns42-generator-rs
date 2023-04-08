@@ -1,18 +1,14 @@
-use crate::schemas::LoaderContext;
+pub struct CargoTomlGenerator;
 
-pub struct CargoTomlGenerator<'a> {
-    schema_loader: &'a LoaderContext<'a>,
-}
-
-impl<'a> CargoTomlGenerator<'a> {
-    pub fn new(schema_loader: &'a LoaderContext<'a>) -> Self {
-        Self { schema_loader }
+impl CargoTomlGenerator {
+    pub fn new() -> Self {
+        Self {}
     }
 
     pub fn generate_file_content(
         &self,
-        package_name: &'a str,
-        package_version: &'a str,
+        package_name: &str,
+        package_version: &str,
     ) -> Result<String, &'static str> {
         let mut package_map = toml::map::Map::new();
 

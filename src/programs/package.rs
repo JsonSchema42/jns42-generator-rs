@@ -1,5 +1,6 @@
 use crate::schemas::manager::Manager;
 use crate::schemas::meta::MetaSchemaId;
+use crate::utils::namer::Namer;
 use clap::Parser;
 use url::Url;
 
@@ -33,6 +34,7 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
         ..
     } = options;
 
+    let mut namer = Namer::<Url>::new();
     let mut manager = Manager::new();
 
     manager.load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;

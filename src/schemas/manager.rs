@@ -13,30 +13,34 @@ pub struct Manager<'a> {
 
 impl<'a> Manager<'a> {
     pub fn new() -> Self {
-        let mut manager = Self::default();
+        Self {
+            loaders: vec![
+                (
+                    MetaSchemaId::Draft202012,
+                    Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()) as LoaderBox,
+                ),
+                (
+                    MetaSchemaId::Draft201909,
+                    Box::new(schemas::draft_2019_09::loader::LoaderImpl::new()),
+                ),
+                (
+                    MetaSchemaId::Draft07,
+                    Box::new(schemas::draft_07::loader::LoaderImpl::new()),
+                ),
+                (
+                    MetaSchemaId::Draft06,
+                    Box::new(schemas::draft_06::loader::LoaderImpl::new()),
+                ),
+                (
+                    MetaSchemaId::Draft04,
+                    Box::new(schemas::draft_04::loader::LoaderImpl::new()),
+                ),
+            ]
+            .into_iter()
+            .collect(),
 
-        manager.add_loader(
-            MetaSchemaId::Draft202012,
-            Box::new(schemas::draft_2020_12::loader::LoaderImpl::new()),
-        );
-        manager.add_loader(
-            MetaSchemaId::Draft201909,
-            Box::new(schemas::draft_2019_09::loader::LoaderImpl::new()),
-        );
-        manager.add_loader(
-            MetaSchemaId::Draft07,
-            Box::new(schemas::draft_07::loader::LoaderImpl::new()),
-        );
-        manager.add_loader(
-            MetaSchemaId::Draft06,
-            Box::new(schemas::draft_06::loader::LoaderImpl::new()),
-        );
-        manager.add_loader(
-            MetaSchemaId::Draft04,
-            Box::new(schemas::draft_04::loader::LoaderImpl::new()),
-        );
-
-        manager
+            ..Default::default()
+        }
     }
 
     pub fn load_root_node(
@@ -92,10 +96,6 @@ impl<'a> Manager<'a> {
         self.load_root_node(root_node, &node_url, default_meta_schema_id)?;
 
         Ok(())
-    }
-
-    pub fn add_loader(&mut self, meta_schema_id: MetaSchemaId, loader: LoaderBox<'a>) {
-        self.loaders.insert(meta_schema_id, loader);
     }
 
     fn discover_meta_schema_id(

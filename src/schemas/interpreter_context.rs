@@ -5,15 +5,15 @@ use crate::schemas::{draft_04, draft_06, draft_07, draft_2019_09, draft_2020_12}
 use crate::utils::ValueRc;
 use regex::Regex;
 use std::rc::Rc;
-use std::{collections::HashMap, fs::File};
+use std::{collections::BTreeMap, fs::File};
 use url::Url;
 
 pub struct InterpreterContext<'a> {
-    strategies: HashMap<MetaSchemaId, InterpreterStrategyBox<'a>>,
-    retrieval_root_node_map: HashMap<Url, Url>,
-    root_node_retrieval_map: HashMap<Url, Url>,
-    root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
-    node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
+    strategies: BTreeMap<MetaSchemaId, InterpreterStrategyBox<'a>>,
+    retrieval_root_node_map: BTreeMap<Url, Url>,
+    root_node_retrieval_map: BTreeMap<Url, Url>,
+    root_node_meta_schema_id_map: BTreeMap<Url, MetaSchemaId>,
+    node_meta_schema_id_map: BTreeMap<Url, MetaSchemaId>,
 }
 
 impl<'a> InterpreterContext<'a> {

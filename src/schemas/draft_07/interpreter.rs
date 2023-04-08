@@ -2,12 +2,12 @@ use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
 use crate::schemas::{InterpreterCommon, InterpreterModelInfo, InterpreterStrategy};
 use crate::utils::ValueRc;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::rc::Rc;
 use url::Url;
 
 pub struct Interpreter {
-    _root_node_map: HashMap<Url, serde_json::Value>,
+    _root_node_map: BTreeMap<Url, serde_json::Value>,
 }
 
 impl Interpreter {

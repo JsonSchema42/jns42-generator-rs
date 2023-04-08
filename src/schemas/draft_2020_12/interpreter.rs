@@ -3,13 +3,13 @@ use super::selectors::Selectors;
 use crate::schemas::interpreter_strategy::InterpreterStrategy;
 use crate::schemas::{InterpreterCommon, InterpreterModelInfo};
 use crate::utils::ValueRc;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::rc::Rc;
 use url::Url;
 
 pub struct Interpreter {
-    root_node_map: HashMap<Url, Rc<ValueRc>>,
-    node_map: HashMap<Url, Rc<ValueRc>>,
+    root_node_map: BTreeMap<Url, Rc<ValueRc>>,
+    node_map: BTreeMap<Url, Rc<ValueRc>>,
 }
 
 impl Interpreter {

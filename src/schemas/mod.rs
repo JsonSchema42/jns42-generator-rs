@@ -5,5 +5,4 @@ pub mod draft_2019_09;
 pub mod draft_2020_12;
 
 pub mod loader;
-pub mod manager;
 pub mod meta;

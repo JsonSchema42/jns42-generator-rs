@@ -6,8 +6,9 @@ pub trait Selectors {
     fn select_id(&self) -> Option<&str>;
     fn select_ref(&self) -> Option<&str>;
 
-    fn select_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
+    fn select_all_sub_nodes_and_self(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
     fn select_all_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
+    fn select_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
 
     fn select_sub_node_def_entries(&self, pointer: &str) -> Option<Vec<(String, Rc<ValueRc>)>>;
     fn select_sub_node_property_entries(&self, pointer: &str)
@@ -37,6 +38,14 @@ impl Selectors for Rc<ValueRc> {
 
     fn select_ref(&self) -> Option<&str> {
         self.as_object()?.get("$ref")?.as_str()
+    }
+
+    fn select_all_sub_nodes_and_self(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)> {
+        let mut result = self.select_all_sub_nodes(pointer);
+
+        result.insert(0, (pointer.to_owned(), self.clone()));
+
+        result
     }
 
     fn select_all_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)> {

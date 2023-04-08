@@ -45,11 +45,7 @@ impl LoaderStrategy for Loader {
             .get(root_node_url)
             .ok_or("root_node not found")?;
 
-        self.node_map
-            .insert(root_node_url.clone(), root_node.clone());
-        result.push(root_node_url.clone());
-
-        for (sub_pointer, sub_node) in root_node.select_all_sub_nodes("").into_iter() {
+        for (sub_pointer, sub_node) in root_node.select_all_sub_nodes_and_self("").into_iter() {
             let sub_node_url = root_node_url
                 .join(format!("#{}", sub_pointer).as_str())
                 .map_err(|_error| "could not build sub_node_url")?;
@@ -70,12 +66,12 @@ impl LoaderStrategy for Loader {
         let node_url = self.get_root_node_url(node.clone(), node_url)?;
         let mut result = Vec::new();
 
-        for node_ref in
-            node.select_all_sub_nodes("")
-                .into_iter()
-                .filter_map(|(_sub_pointer, sub_node)| {
-                    sub_node.select_ref().map(|value| value.to_owned())
-                })
+        for node_ref in node
+            .select_all_sub_nodes_and_self("")
+            .into_iter()
+            .filter_map(|(_sub_pointer, sub_node)| {
+                sub_node.select_ref().map(|value| value.to_owned())
+            })
         {
             let node_ref_url = node_url
                 .join(node_ref.as_str())

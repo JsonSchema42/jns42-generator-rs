@@ -1,14 +1,15 @@
 use crate::{schemas::LoaderContext, utils::Namer};
+use inflector::cases::camelcase::to_camel_case;
 use quote::{format_ident, quote, TokenStreamExt, __private::TokenStream};
 use rust_format::Formatter;
 use url::Url;
 
-pub struct ModelsRsGenerator<'a> {
+pub struct ValidatorsRsGenerator<'a> {
     loader_context: &'a LoaderContext<'a>,
     namer: &'a Namer<Url>,
 }
 
-impl<'a> ModelsRsGenerator<'a> {
+impl<'a> ValidatorsRsGenerator<'a> {
     pub fn new(loader_context: &'a LoaderContext<'a>, namer: &'a Namer<Url>) -> Self {
         Self {
             loader_context,
@@ -32,7 +33,7 @@ impl<'a> ModelsRsGenerator<'a> {
         let mut tokens = quote! {};
 
         tokens.append_all(quote! {
-            use serde::{Deserialize, Serialize};
+            use super::models;
         });
 
         for node_url in self.loader_context.get_all_node_urls() {
@@ -45,6 +46,11 @@ impl<'a> ModelsRsGenerator<'a> {
     fn generate_model_tokenstream(&self, node_url: &Url) -> Result<TokenStream, &'static str> {
         let node_name = self.namer.get_name(node_url).ok_or("could not find name")?;
 
+        let validator_name = node_name.join("_");
+        let validator_name = format!("validate_{}", validator_name);
+        let validator_name = to_camel_case(&validator_name);
+        let validator_name = format_ident!("{}", validator_name);
+
         let model_name = node_name.join("_");
         let model_name = inflector::cases::classcase::to_class_case(&model_name);
         let model_name = format_ident!("{}", model_name);
@@ -52,10 +58,12 @@ impl<'a> ModelsRsGenerator<'a> {
         let mut tokens = quote! {};
 
         tokens.append_all(quote! {
-            #[derive(Serialize, Deserialize, Debug, Default)]
-            pub struct #model_name{
-                //
+
+            pub fn #validator_name(model: &models::#model_name) -> bool {
+                todo!();
             }
+
+
         });
 
         Ok(tokens)

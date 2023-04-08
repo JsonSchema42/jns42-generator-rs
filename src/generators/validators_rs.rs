@@ -1,5 +1,5 @@
 use crate::{schemas::LoaderContext, utils::Namer};
-use inflector::cases::camelcase::to_camel_case;
+use inflector::cases::{classcase::to_class_case, snakecase::to_snake_case};
 use quote::{format_ident, quote, TokenStreamExt, __private::TokenStream};
 use rust_format::Formatter;
 use url::Url;
@@ -48,11 +48,11 @@ impl<'a> ValidatorsRsGenerator<'a> {
 
         let validator_name = node_name.join("_");
         let validator_name = format!("validate_{}", validator_name);
-        let validator_name = to_camel_case(&validator_name);
+        let validator_name = to_snake_case(&validator_name);
         let validator_name = format_ident!("{}", validator_name);
 
         let model_name = node_name.join("_");
-        let model_name = inflector::cases::classcase::to_class_case(&model_name);
+        let model_name = to_class_case(&model_name);
         let model_name = format_ident!("{}", model_name);
 
         let mut tokens = quote! {};

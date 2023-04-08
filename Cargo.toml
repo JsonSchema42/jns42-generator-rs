@@ -25,7 +25,6 @@ urlencoding = "2.1"
 Inflector = "0.11"
 
 [lib]
-name = "goodschema"
 path = "src/lib.rs"
 
 [[bin]]

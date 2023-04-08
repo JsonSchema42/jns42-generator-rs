@@ -10,32 +10,51 @@ impl CargoTomlGenerator {
         package_name: &str,
         package_version: &str,
     ) -> Result<String, &'static str> {
-        let mut package_map = toml::map::Map::new();
+        let package_table = toml::Value::Table({
+            let mut map = toml::map::Map::new();
+            map.insert(
+                "name".to_owned(),
+                toml::Value::String(package_name.to_owned()),
+            );
+            map.insert(
+                "version".to_owned(),
+                toml::Value::String(package_version.to_owned()),
+            );
+            map.insert("edition".to_owned(), toml::Value::String("2021".to_owned()));
+            map
+        });
 
-        package_map.insert(
-            "name".to_owned(),
-            toml::Value::String(package_name.to_owned()),
-        );
-        package_map.insert(
-            "version".to_owned(),
-            toml::Value::String(package_version.to_owned()),
-        );
+        let dependencies_table = toml::Value::Table({
+            let mut map = toml::map::Map::new();
+            map.insert(
+                "serde".to_owned(),
+                toml::Value::Table({
+                    let mut map = toml::map::Map::new();
+                    map.insert("version".to_owned(), toml::Value::String("1.0".to_owned()));
+                    map.insert(
+                        "features".to_owned(),
+                        toml::Value::Array(vec![toml::Value::String("derive".to_owned())]),
+                    );
+                    map
+                }),
+            );
+            map
+        });
 
-        let package = toml::Value::Table(package_map);
+        let lib_table = toml::Value::Table({
+            let mut map = toml::map::Map::new();
+            map.insert("path".to_owned(), toml::Value::String("lib.rs".to_owned()));
+            map
+        });
 
-        let mut dependencies_map = toml::map::Map::new();
+        let manifest_table = toml::Value::Table({
+            let mut map = toml::map::Map::new();
+            map.insert("package".to_owned(), package_table);
+            map.insert("dependencies".to_owned(), dependencies_table);
+            map.insert("lib".to_owned(), lib_table);
+            map
+        });
 
-        dependencies_map.insert("serde".to_owned(), toml::Value::String("1.0".to_owned()));
-
-        let dependencies = toml::Value::Table(dependencies_map);
-
-        let mut manifest_map = toml::map::Map::new();
-
-        manifest_map.insert("package".to_owned(), package);
-        manifest_map.insert("dependencies".to_owned(), dependencies);
-
-        let manifest = toml::Value::Table(manifest_map);
-
-        toml::ser::to_string_pretty(&manifest).or(Err("serializtion failed"))
+        toml::ser::to_string_pretty(&manifest_table).or(Err("serializtion failed"))
     }
 }

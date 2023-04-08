@@ -1,4 +1,5 @@
 use crate::{schemas::LoaderContext, utils::Namer};
+use inflector::cases::classcase::to_class_case;
 use quote::{format_ident, quote, TokenStreamExt, __private::TokenStream};
 use rust_format::Formatter;
 use url::Url;
@@ -46,7 +47,7 @@ impl<'a> ModelsRsGenerator<'a> {
         let node_name = self.namer.get_name(node_url).ok_or("could not find name")?;
 
         let model_name = node_name.join("_");
-        let model_name = inflector::cases::classcase::to_class_case(&model_name);
+        let model_name = to_class_case(&model_name);
         let model_name = format_ident!("{}", model_name);
 
         let mut tokens = quote! {};

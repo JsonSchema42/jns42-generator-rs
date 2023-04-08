@@ -40,12 +40,16 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
         ..
     } = options;
 
-    let mut _namer = Namer::<Url>::new(0);
     let mut loader_context = LoaderContext::new();
-
     loader_context.load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;
 
-    let package_generator = PackageGenerator::new(&loader_context);
+    let mut namer = Namer::<Url>::new(0);
+    for node_url in loader_context.get_all_node_urls() {
+        let name = loader_context.get_node_model_name(&node_url);
+        namer.register_name(node_url, &name)?;
+    }
+
+    let package_generator = PackageGenerator::new(&loader_context, &namer);
 
     package_generator.generate_package(&package_name, &package_version, &package_directory)?;
 

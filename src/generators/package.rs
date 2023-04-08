@@ -1,4 +1,6 @@
-use crate::schemas::LoaderContext;
+use url::Url;
+
+use crate::{schemas::LoaderContext, utils::Namer};
 use std::{fs, path::PathBuf};
 
 use super::{cargo_toml::CargoTomlGenerator, models_rs::ModelsRsGenerator};
@@ -9,10 +11,10 @@ pub struct PackageGenerator<'a> {
 }
 
 impl<'a> PackageGenerator<'a> {
-    pub fn new(schema_loader: &'a LoaderContext<'a>) -> Self {
+    pub fn new(schema_loader: &'a LoaderContext<'a>, namer: &'a Namer<Url>) -> Self {
         Self {
             cargo_toml_generator: CargoTomlGenerator::new(),
-            models_rs_generator: ModelsRsGenerator::new(schema_loader),
+            models_rs_generator: ModelsRsGenerator::new(schema_loader, namer),
         }
     }
 

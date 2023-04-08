@@ -11,6 +11,7 @@ pub struct LoaderContext<'a> {
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
     root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
+    node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
 }
 
 impl<'a> LoaderContext<'a> {
@@ -35,6 +36,7 @@ impl<'a> LoaderContext<'a> {
             retrieval_root_node_map: Default::default(),
             root_node_retrieval_map: Default::default(),
             root_node_meta_schema_id_map: Default::default(),
+            node_meta_schema_id_map: Default::default(),
         }
     }
 
@@ -48,10 +50,13 @@ impl<'a> LoaderContext<'a> {
 
         let loader = self.strategies.get_mut(&meta_schema_id).unwrap();
 
-        let node_url = loader.get_root_node_url(node.clone(), node_url)?;
+        let root_node_url = loader.get_root_node_url(node.clone(), node_url)?;
 
-        loader.load_root_node(node, &node_url)?;
-        loader.index_root_node(&node_url)?;
+        loader.load_root_node(node, &root_node_url)?;
+        for node_url in loader.index_root_node(&root_node_url)? {
+            self.node_meta_schema_id_map
+                .insert(node_url, meta_schema_id);
+        }
 
         Ok(())
     }
@@ -91,6 +96,22 @@ impl<'a> LoaderContext<'a> {
         self.load_root_node(root_node, &node_url, default_meta_schema_id)?;
 
         Ok(())
+    }
+
+    pub fn get_all_node_urls(&self) -> Vec<Url> {
+        self.node_meta_schema_id_map.keys().cloned().collect()
+    }
+
+    pub fn get_node_model_name(&self, node_url: &Url) -> String {
+        let segments = node_url.path_segments();
+
+        if let Some(segments) = segments {
+            if let Some(segment) = segments.last() {
+                return segment.to_owned();
+            }
+        }
+
+        "Schema".to_owned()
     }
 
     fn discover_meta_schema_id(

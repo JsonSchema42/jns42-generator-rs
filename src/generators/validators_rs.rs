@@ -46,12 +46,12 @@ impl<'a> ValidatorsRsGenerator<'a> {
     fn generate_model_tokenstream(&self, node_url: &Url) -> Result<TokenStream, &'static str> {
         let node_name = self.namer.get_name(node_url).ok_or("could not find name")?;
 
-        let validator_name = node_name.join("_");
+        let validator_name = node_name.join(" ");
         let validator_name = format!("validate_{}", validator_name);
         let validator_name = to_snake_case(&validator_name);
         let validator_name = format_ident!("{}", validator_name);
 
-        let model_name = node_name.join("_");
+        let model_name = node_name.join(" ");
         let model_name = to_class_case(&model_name);
         let model_name = format_ident!("{}", model_name);
 

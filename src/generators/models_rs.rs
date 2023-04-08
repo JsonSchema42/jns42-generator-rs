@@ -52,7 +52,7 @@ impl<'a> ModelsRsGenerator<'a> {
         let mut tokens = quote! {};
 
         tokens.append_all(quote! {
-            #[derive(Serialize, Deserialize, Debug)]
+            #[derive(Serialize, Deserialize, Debug, Default)]
             pub struct #name{
 
             }

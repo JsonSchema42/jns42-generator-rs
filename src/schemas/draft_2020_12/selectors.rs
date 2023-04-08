@@ -99,7 +99,7 @@ impl Selectors for Rc<ValueRc> {
             .iter()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -119,7 +119,7 @@ impl Selectors for Rc<ValueRc> {
             .iter()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -135,7 +135,7 @@ impl Selectors for Rc<ValueRc> {
         let selected = self.as_object()?.get(select_name)?;
 
         let result = vec![(
-            join_json_pointer(vec![pointer, select_name]),
+            join_json_pointer(pointer, vec![select_name]),
             selected.clone(),
         )];
 
@@ -154,7 +154,7 @@ impl Selectors for Rc<ValueRc> {
             .enumerate()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.to_string().as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.to_string().as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -167,7 +167,7 @@ impl Selectors for Rc<ValueRc> {
         let selected = self.as_object()?.get(select_name)?;
 
         let result = vec![(
-            join_json_pointer(vec![pointer, select_name]),
+            join_json_pointer(pointer, vec![select_name]),
             selected.clone(),
         )];
 
@@ -183,7 +183,7 @@ impl Selectors for Rc<ValueRc> {
             .enumerate()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.to_string().as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.to_string().as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -201,7 +201,7 @@ impl Selectors for Rc<ValueRc> {
             .enumerate()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.to_string().as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.to_string().as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -219,7 +219,7 @@ impl Selectors for Rc<ValueRc> {
             .enumerate()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.to_string().as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.to_string().as_str()]),
                     sub_node.clone(),
                 )
             })

@@ -1,7 +1,10 @@
-pub fn join_json_pointer(parts: Vec<&str>) -> String {
-    parts
+pub fn join_json_pointer(base: &str, parts: Vec<&str>) -> String {
+    let suffix = parts
         .iter()
         .map(|part| urlencoding::encode(part))
+        .map(|part| format!("/{}", part))
         .collect::<Vec<_>>()
-        .join("/")
+        .join("");
+
+    format!("{}{}", base, suffix)
 }

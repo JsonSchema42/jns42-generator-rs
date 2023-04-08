@@ -119,10 +119,11 @@ impl<'a> InterpreterContext<'a> {
         let path_segments = node_url.path_segments();
         if let Some(segments) = path_segments {
             let mut segments: Vec<_> = segments
+                .map(|part| urlencoding::decode(part).unwrap())
                 .filter(|segment| re_filter.is_match(segment))
                 .collect();
             if let Some(segment) = segments.pop() {
-                name_parts.push(segment.to_owned());
+                name_parts.push(segment.into_owned());
             }
         }
 

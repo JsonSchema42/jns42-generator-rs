@@ -1,3 +1,4 @@
+mod generators;
 mod programs;
 mod schemas;
 mod utils;

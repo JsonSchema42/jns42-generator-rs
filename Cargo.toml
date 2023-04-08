@@ -12,9 +12,11 @@ keywords = ["good", "json", "schema"]
 maintenance = { status = "actively-developed" }
 
 [dependencies]
+cargo_toml = "0.15.2"
 clap = { version = "4.1.14", features = ["derive"] }
 serde = "1.0.158"
 serde_json = "1.0.94"
+toml = "0.7.3"
 url = "2.3.1"
 urlencoding = "2.1.2"
 

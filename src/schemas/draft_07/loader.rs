@@ -1,19 +1,20 @@
 use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
-use crate::schemas::loader_strategy::LoaderStrategy;
+use crate::schemas::LoaderStrategy;
 use crate::utils::ValueRc;
 use std::collections::HashMap;
 use std::rc::Rc;
 use url::Url;
 
-#[derive(Default)]
 pub struct Loader {
     _root_node_map: HashMap<Url, serde_json::Value>,
 }
 
 impl Loader {
     pub fn new() -> Self {
-        Self::default()
+        Self {
+            _root_node_map: Default::default(),
+        }
     }
 }
 

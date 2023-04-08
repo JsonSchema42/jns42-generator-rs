@@ -6,7 +6,6 @@ use std::rc::Rc;
 use std::{collections::HashMap, fs::File};
 use url::Url;
 
-#[derive(Default)]
 pub struct LoaderContext<'a> {
     strategies: HashMap<MetaSchemaId, LoaderStrategyBox<'a>>,
     retrieval_root_node_map: HashMap<Url, Url>,
@@ -33,7 +32,9 @@ impl<'a> LoaderContext<'a> {
             .into_iter()
             .collect(),
 
-            ..Default::default()
+            retrieval_root_node_map: Default::default(),
+            root_node_retrieval_map: Default::default(),
+            root_node_meta_schema_id_map: Default::default(),
         }
     }
 

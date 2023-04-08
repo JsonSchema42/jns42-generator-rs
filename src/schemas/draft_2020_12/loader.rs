@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use url::Url;
 
-#[derive(Default)]
 pub struct Loader {
     root_node_map: HashMap<Url, Rc<ValueRc>>,
     node_map: HashMap<Url, Rc<ValueRc>>,
@@ -14,7 +13,10 @@ pub struct Loader {
 
 impl Loader {
     pub fn new() -> Self {
-        Self::default()
+        Self {
+            root_node_map: Default::default(),
+            node_map: Default::default(),
+        }
     }
 }
 

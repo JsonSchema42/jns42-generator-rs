@@ -1,4 +1,4 @@
-use super::loader_strategy::LoaderStrategyBox;
+use super::interpreter_strategy::InterpreterStrategyBox;
 use super::meta::MetaSchemaId;
 use crate::schemas::{draft_04, draft_06, draft_07, draft_2019_09, draft_2020_12};
 use crate::utils::ValueRc;
@@ -6,29 +6,38 @@ use std::rc::Rc;
 use std::{collections::HashMap, fs::File};
 use url::Url;
 
-pub struct LoaderContext<'a> {
-    strategies: HashMap<MetaSchemaId, LoaderStrategyBox<'a>>,
+pub struct InterpreterContext<'a> {
+    strategies: HashMap<MetaSchemaId, InterpreterStrategyBox<'a>>,
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
     root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
     node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
 }
 
-impl<'a> LoaderContext<'a> {
+impl<'a> InterpreterContext<'a> {
     pub fn new() -> Self {
         Self {
             strategies: vec![
                 (
                     MetaSchemaId::Draft202012,
-                    Box::new(draft_2020_12::Loader::new()) as LoaderStrategyBox,
+                    Box::new(draft_2020_12::Interpreter::new()) as InterpreterStrategyBox,
                 ),
                 (
                     MetaSchemaId::Draft201909,
-                    Box::new(draft_2019_09::Loader::new()),
+                    Box::new(draft_2019_09::Interpreter::new()),
                 ),
-                (MetaSchemaId::Draft07, Box::new(draft_07::Loader::new())),
-                (MetaSchemaId::Draft06, Box::new(draft_06::Loader::new())),
-                (MetaSchemaId::Draft04, Box::new(draft_04::Loader::new())),
+                (
+                    MetaSchemaId::Draft07,
+                    Box::new(draft_07::Interpreter::new()),
+                ),
+                (
+                    MetaSchemaId::Draft06,
+                    Box::new(draft_06::Interpreter::new()),
+                ),
+                (
+                    MetaSchemaId::Draft04,
+                    Box::new(draft_04::Interpreter::new()),
+                ),
             ]
             .into_iter()
             .collect(),
@@ -151,6 +160,6 @@ mod tests {
 
     #[test]
     fn simple_manager() {
-        let _manager = LoaderContext::new();
+        let _manager = InterpreterContext::new();
     }
 }

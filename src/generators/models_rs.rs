@@ -1,16 +1,16 @@
-use crate::{schemas::LoaderContext, utils::Namer};
+use crate::{schemas::InterpreterContext, utils::Namer};
 use inflector::cases::classcase::to_class_case;
 use quote::{format_ident, quote, TokenStreamExt, __private::TokenStream};
 use rust_format::Formatter;
 use url::Url;
 
 pub struct ModelsRsGenerator<'a> {
-    loader_context: &'a LoaderContext<'a>,
+    loader_context: &'a InterpreterContext<'a>,
     namer: &'a Namer<Url>,
 }
 
 impl<'a> ModelsRsGenerator<'a> {
-    pub fn new(loader_context: &'a LoaderContext<'a>, namer: &'a Namer<Url>) -> Self {
+    pub fn new(loader_context: &'a InterpreterContext<'a>, namer: &'a Namer<Url>) -> Self {
         Self {
             loader_context,
             namer,

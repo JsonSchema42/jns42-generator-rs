@@ -1,7 +1,7 @@
 use crate::utils::Namer;
 use crate::{
     generators::PackageGenerator,
-    schemas::{LoaderContext, MetaSchemaId},
+    schemas::{InterpreterContext, MetaSchemaId},
 };
 use clap::Parser;
 use std::path::PathBuf;
@@ -40,7 +40,7 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
         ..
     } = options;
 
-    let mut loader_context = LoaderContext::new();
+    let mut loader_context = InterpreterContext::new();
     loader_context.load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;
 
     let mut namer = Namer::<Url>::new(0);

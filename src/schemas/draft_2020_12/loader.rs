@@ -1,17 +1,17 @@
 use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
-use crate::schemas::loader_strategy::LoaderStrategy;
+use crate::schemas::interpreter_strategy::InterpreterStrategy;
 use crate::utils::ValueRc;
 use std::collections::HashMap;
 use std::rc::Rc;
 use url::Url;
 
-pub struct Loader {
+pub struct Interpreter {
     root_node_map: HashMap<Url, Rc<ValueRc>>,
     node_map: HashMap<Url, Rc<ValueRc>>,
 }
 
-impl Loader {
+impl Interpreter {
     pub fn new() -> Self {
         Self {
             root_node_map: Default::default(),
@@ -20,7 +20,7 @@ impl Loader {
     }
 }
 
-impl LoaderStrategy for Loader {
+impl InterpreterStrategy for Interpreter {
     fn is_schema_root_node(&self, node: Rc<ValueRc>) -> bool {
         if let Some(schema) = node.select_schema() {
             return schema == META_SCHEMA_ID;

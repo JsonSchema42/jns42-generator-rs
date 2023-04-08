@@ -1,6 +1,6 @@
 use url::Url;
 
-use crate::{schemas::LoaderContext, utils::Namer};
+use crate::{schemas::InterpreterContext, utils::Namer};
 use std::{fs, path::PathBuf};
 
 use super::{
@@ -16,7 +16,7 @@ pub struct PackageGenerator<'a> {
 }
 
 impl<'a> PackageGenerator<'a> {
-    pub fn new(schema_loader: &'a LoaderContext<'a>, namer: &'a Namer<Url>) -> Self {
+    pub fn new(schema_loader: &'a InterpreterContext<'a>, namer: &'a Namer<Url>) -> Self {
         Self {
             cargo_toml_generator: CargoTomlGenerator::new(),
             lib_rs_generator: LibRsGenerator::new(),

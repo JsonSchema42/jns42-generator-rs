@@ -1,10 +1,10 @@
-use crate::utils::value_rc::ValueRc;
+use crate::utils::ValueRc;
 use std::rc::Rc;
 use url::Url;
 
-pub type LoaderBox<'a> = Box<dyn Loader + 'a>;
+pub type InterpreterStrategyBox<'a> = Box<dyn InterpreterStrategy + 'a>;
 
-pub trait Loader {
+pub trait InterpreterStrategy {
     fn is_schema_root_node(&self, node: Rc<ValueRc>) -> bool;
 
     fn load_root_node(&mut self, node: Rc<ValueRc>, node_url: &Url) -> Result<(), &'static str>;

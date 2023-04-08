@@ -108,6 +108,8 @@ version = "0.0.0"
 dependencies = [
  "cargo_toml",
  "clap",
+ "quote",
+ "rust-format",
  "serde",
  "serde_json",
  "toml",
@@ -226,6 +228,15 @@ name = "quote"
 version = "1.0.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4424af4bf778aae2051a77b60283332f386554255d722233d09fbfc7e30da2fc"
+dependencies = [
+ "proc-macro2",
+]
+
+[[package]]
+name = "rust-format"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60e7c00b6c3bf5e38a880eec01d7e829d12ca682079f8238a464def3c4b31627"
 dependencies = [
  "proc-macro2",
 ]

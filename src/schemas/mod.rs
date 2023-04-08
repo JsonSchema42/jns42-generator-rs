@@ -6,8 +6,8 @@ pub mod draft_2020_12;
 
 mod interpreter_context;
 mod interpreter_strategy;
-mod meta;
+mod meta_schema_id;
 
 pub use interpreter_context::InterpreterContext;
 pub use interpreter_strategy::{InterpreterStrategy, InterpreterStrategyBox};
-pub use meta::MetaSchemaId;
+pub use meta_schema_id::MetaSchemaId;

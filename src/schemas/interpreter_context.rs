@@ -1,5 +1,5 @@
 use super::interpreter_strategy::InterpreterStrategyBox;
-use super::meta::MetaSchemaId;
+use super::meta_schema_id::MetaSchemaId;
 use crate::schemas::{draft_04, draft_06, draft_07, draft_2019_09, draft_2020_12};
 use crate::utils::ValueRc;
 use std::rc::Rc;

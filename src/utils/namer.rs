@@ -51,7 +51,7 @@ where
             let name_parts = vec![name.clone()];
 
             self.name_id_map.insert(name.clone(), ids);
-            self.id_name_map.insert(id.clone(), name_parts);
+            self.id_name_map.insert(id, name_parts);
         }
 
         Ok(())

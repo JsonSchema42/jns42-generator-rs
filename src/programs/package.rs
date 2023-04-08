@@ -34,7 +34,7 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
         ..
     } = options;
 
-    let mut namer = Namer::<Url>::new();
+    let mut _namer = Namer::<Url>::new(0);
     let mut manager = Manager::new();
 
     manager.load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;

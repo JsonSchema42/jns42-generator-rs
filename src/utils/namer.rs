@@ -1,8 +1,8 @@
+use std::collections::hash_map::DefaultHasher;
 use std::collections::HashMap;
-use std::hash::Hash;
+use std::hash::{Hash, Hasher};
 use std::vec;
 
-#[derive(Debug, Default)]
 pub struct Namer<T> {
     seed: usize,
     name_id_map: HashMap<String, Vec<T>>,
@@ -13,9 +13,9 @@ impl<T> Namer<T>
 where
     T: Eq + Hash + Clone,
 {
-    pub fn new() -> Self {
+    pub fn new(seed: usize) -> Self {
         Self {
-            seed: Default::default(),
+            seed,
             name_id_map: Default::default(),
             id_name_map: Default::default(),
         }
@@ -29,14 +29,14 @@ where
         if let Some(ids) = self.name_id_map.get(&name) {
             if ids.len() <= 1 {
                 for id in ids {
-                    let suffix = Self::create_suffix(id);
+                    let suffix = self.create_suffix(id);
 
                     self.id_name_map
                         .insert(id.clone(), vec![name.clone(), suffix]);
                 }
             }
 
-            let suffix = Self::create_suffix(&id);
+            let suffix = self.create_suffix(&id);
 
             let mut ids = ids.clone();
             ids.push(id.clone());
@@ -59,7 +59,14 @@ where
         self.id_name_map.get(id)
     }
 
-    fn create_suffix(id: &T) -> String {
-        todo!()
+    fn create_suffix(&self, id: &T) -> String {
+        let mut hasher = DefaultHasher::new();
+
+        hasher.write_usize(self.seed);
+        id.hash(&mut hasher);
+
+        let hash = hasher.finish();
+
+        format!("{}", radix_fmt::radix_36(hash))
     }
 }

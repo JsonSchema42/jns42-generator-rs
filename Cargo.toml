@@ -13,6 +13,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 clap = { version = "4.1.14", features = ["derive"] }
+radix_fmt = "1.0.0"
 serde = "1.0.158"
 serde_json = "1.0.94"
 url = "2.3.1"

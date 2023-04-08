@@ -67,9 +67,9 @@ where
         hasher.write_usize(self.seed);
         id.hash(&mut hasher);
 
-        let hash = hasher.finish() % u32::MAX as u64;
+        let hash = hasher.finish() % 1000000;
 
-        format!("{}", radix_fmt::radix_36(hash))
+        format!("{:06}", hash)
     }
 }
 

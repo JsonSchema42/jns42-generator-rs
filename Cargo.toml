@@ -16,13 +16,13 @@ cargo_toml = "0.15"
 clap = { version = "4.1", features = ["derive"] }
 quote = "1.0"
 rust-format = { version = "0.3", features = ["token_stream"] }
-radix_fmt = "1.0"
 serde = "1.0"
 serde_json = "1.0"
 toml = { version = "0.7", features = ["preserve_order"] }
 url = "2.3"
 urlencoding = "2.1"
 Inflector = "0.11"
+regex = "1.7.3"
 
 [lib]
 path = "src/lib.rs"

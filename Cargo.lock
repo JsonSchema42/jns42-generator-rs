@@ -184,7 +184,7 @@ dependencies = [
  "cargo_toml",
  "clap",
  "quote",
- "radix_fmt",
+ "regex",
  "rust-format",
  "serde",
  "serde_json",
@@ -313,12 +313,6 @@ checksum = "4424af4bf778aae2051a77b60283332f386554255d722233d09fbfc7e30da2fc"
 dependencies = [
  "proc-macro2",
 ]
-
-[[package]]
-name = "radix_fmt"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce082a9940a7ace2ad4a8b7d0b1eac6aa378895f18be598230c5f2284ac05426"
 
 [[package]]
 name = "regex"

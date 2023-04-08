@@ -2,6 +2,7 @@ use super::interpreter_strategy::InterpreterStrategyBox;
 use super::meta_schema_id::MetaSchemaId;
 use crate::schemas::{draft_04, draft_06, draft_07, draft_2019_09, draft_2020_12};
 use crate::utils::ValueRc;
+use regex::Regex;
 use std::rc::Rc;
 use std::{collections::HashMap, fs::File};
 use url::Url;
@@ -112,15 +113,38 @@ impl<'a> InterpreterContext<'a> {
     }
 
     pub fn get_node_model_name(&self, node_url: &Url) -> String {
-        let segments = node_url.path_segments();
+        let mut name_parts = Vec::new();
+        let re_filter = Regex::new(r"^[a-zA-Z]").unwrap();
 
-        if let Some(segments) = segments {
-            if let Some(segment) = segments.last() {
-                return segment.to_owned();
+        let path_segments = node_url.path_segments();
+        if let Some(segments) = path_segments {
+            let mut segments: Vec<_> = segments
+                .filter(|segment| re_filter.is_match(segment))
+                .collect();
+            if let Some(segment) = segments.pop() {
+                name_parts.push(segment.to_owned());
             }
         }
 
-        "Model".to_owned()
+        let fragment = node_url.fragment();
+        if let Some(fragment) = fragment {
+            let mut fragement_parts: Vec<_> = fragment
+                .split('/')
+                .map(|part| urlencoding::decode(part).unwrap())
+                .collect();
+            if let Some(part) = fragement_parts.pop() {
+                name_parts.push(part.into_owned());
+            }
+            if let Some(part) = fragement_parts.pop() {
+                name_parts.push(part.into_owned());
+            }
+        }
+
+        if name_parts.len() < 2 {
+            name_parts.push("Model".to_owned());
+        }
+
+        name_parts.join(" ")
     }
 
     fn discover_meta_schema_id(

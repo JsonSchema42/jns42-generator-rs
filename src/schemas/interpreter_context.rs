@@ -120,7 +120,7 @@ impl<'a> InterpreterContext<'a> {
             }
         }
 
-        "Schema".to_owned()
+        "Model".to_owned()
     }
 
     fn discover_meta_schema_id(

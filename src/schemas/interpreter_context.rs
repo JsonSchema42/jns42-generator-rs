@@ -57,12 +57,12 @@ impl<'a> InterpreterContext<'a> {
     ) -> Result<(), &'static str> {
         let meta_schema_id = self.discover_meta_schema_id(node.clone(), default_meta_schema_id);
 
-        let loader = self.strategies.get_mut(&meta_schema_id).unwrap();
+        let strategy = self.strategies.get_mut(&meta_schema_id).unwrap();
 
-        let root_node_url = loader.get_root_node_url(node.clone(), node_url)?;
+        let root_node_url = strategy.get_root_node_url(node.clone(), node_url)?;
 
-        loader.load_root_node(node, &root_node_url)?;
-        for node_url in loader.index_root_node(&root_node_url)? {
+        strategy.load_root_node(node, &root_node_url)?;
+        for node_url in strategy.index_root_node(&root_node_url)? {
             self.node_meta_schema_id_map
                 .insert(node_url, meta_schema_id);
         }
@@ -85,9 +85,9 @@ impl<'a> InterpreterContext<'a> {
         let meta_schema_id =
             self.discover_meta_schema_id(root_node.clone(), default_meta_schema_id);
 
-        let loader = self.strategies.get(&meta_schema_id).unwrap();
+        let strategy = self.strategies.get(&meta_schema_id).unwrap();
 
-        let node_url = loader.get_root_node_url(root_node.clone(), node_url)?;
+        let node_url = strategy.get_root_node_url(root_node.clone(), node_url)?;
 
         self.retrieval_root_node_map
             .insert(retrieval_url.clone(), node_url.clone());
@@ -97,7 +97,7 @@ impl<'a> InterpreterContext<'a> {
             .insert(node_url.clone(), meta_schema_id);
 
         for (sub_node_url, sub_retrieval_url) in
-            loader.get_sub_node_urls(root_node.clone(), &node_url, retrieval_url)?
+            strategy.get_sub_node_urls(root_node.clone(), &node_url, retrieval_url)?
         {
             self.load_from_url(&sub_node_url, &sub_retrieval_url, meta_schema_id)?;
         }
@@ -128,8 +128,8 @@ impl<'a> InterpreterContext<'a> {
         node: Rc<ValueRc>,
         default_meta_schema_id: MetaSchemaId,
     ) -> MetaSchemaId {
-        for (schema_id, loader) in self.strategies.iter() {
-            if loader.is_schema_root_node(node.clone()) {
+        for (schema_id, strategy) in self.strategies.iter() {
+            if strategy.is_schema_root_node(node.clone()) {
                 return *schema_id;
             }
         }

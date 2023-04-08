@@ -1,6 +1,6 @@
-mod loader;
+mod interpreter;
 mod meta;
 mod selectors;
 
-pub use loader::Interpreter;
+pub use interpreter::Interpreter;
 pub use meta::META_SCHEMA_ID;

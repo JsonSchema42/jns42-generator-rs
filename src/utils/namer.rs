@@ -21,10 +21,12 @@ where
         }
     }
 
-    pub fn register_name(&mut self, id: T, name: String) -> Result<(), &'static str> {
+    pub fn register_name(&mut self, id: T, name: &str) -> Result<(), &'static str> {
         if self.id_name_map.contains_key(&id) {
             return Err("id already used");
         }
+
+        let name = name.to_owned();
 
         if let Some(ids) = self.name_id_map.get(&name) {
             if ids.len() <= 1 {
@@ -52,7 +54,7 @@ where
             self.id_name_map.insert(id.clone(), name_parts);
         }
 
-        todo!()
+        Ok(())
     }
 
     pub fn get_name(&self, id: &T) -> Option<&Vec<String>> {
@@ -65,8 +67,32 @@ where
         hasher.write_usize(self.seed);
         id.hash(&mut hasher);
 
-        let hash = hasher.finish();
+        let hash = hasher.finish() % u32::MAX as u64;
 
         format!("{}", radix_fmt::radix_36(hash))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn namer() -> Result<(), &'static str> {
+        let mut namer = Namer::new(0);
+
+        namer.register_name(1, "Good")?;
+        assert_eq!(namer.get_name(&1).unwrap(), &vec!["Good"]);
+
+        namer.register_name(2, "Good")?;
+        assert_eq!(namer.get_name(&1).unwrap(), &vec!["Good", "37txpf"]);
+        assert_eq!(namer.get_name(&2).unwrap(), &vec!["Good", "b8xp0y"]);
+
+        namer.register_name(3, "Good")?;
+        assert_eq!(namer.get_name(&1).unwrap(), &vec!["Good", "37txpf"]);
+        assert_eq!(namer.get_name(&2).unwrap(), &vec!["Good", "b8xp0y"]);
+        assert_eq!(namer.get_name(&3).unwrap(), &vec!["Good", "1jzl4lj"]);
+
+        Ok(())
     }
 }

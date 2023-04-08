@@ -1,3 +1,4 @@
+use super::loader_strategy::LoaderStrategyBox;
 use super::meta::MetaSchemaId;
 use crate::schemas;
 use crate::utils::value_rc::ValueRc;
@@ -5,32 +6,9 @@ use std::rc::Rc;
 use std::{collections::HashMap, fs::File};
 use url::Url;
 
-pub type LoaderBox<'a> = Box<dyn LoaderStrategy + 'a>;
-
-pub trait LoaderStrategy {
-    fn is_schema_root_node(&self, node: Rc<ValueRc>) -> bool;
-
-    fn load_root_node(&mut self, node: Rc<ValueRc>, node_url: &Url) -> Result<(), &'static str>;
-
-    fn index_root_node(&mut self, node_url: &Url) -> Result<Vec<Url>, &'static str>;
-
-    fn get_sub_node_urls(
-        &self,
-        node: Rc<ValueRc>,
-        node_url: &Url,
-        retrieval_url: &Url,
-    ) -> Result<Vec<(Url, Url)>, &'static str>;
-
-    fn get_root_node_url(
-        &self,
-        node: Rc<ValueRc>,
-        default_node_url: &Url,
-    ) -> Result<Url, &'static str>;
-}
-
 #[derive(Default)]
 pub struct LoaderContext<'a> {
-    loaders: HashMap<MetaSchemaId, LoaderBox<'a>>,
+    strategies: HashMap<MetaSchemaId, LoaderStrategyBox<'a>>,
     retrieval_root_node_map: HashMap<Url, Url>,
     root_node_retrieval_map: HashMap<Url, Url>,
     root_node_meta_schema_id_map: HashMap<Url, MetaSchemaId>,
@@ -39,10 +17,10 @@ pub struct LoaderContext<'a> {
 impl<'a> LoaderContext<'a> {
     pub fn new() -> Self {
         Self {
-            loaders: vec![
+            strategies: vec![
                 (
                     MetaSchemaId::Draft202012,
-                    Box::new(schemas::draft_2020_12::loader::Loader::new()) as LoaderBox,
+                    Box::new(schemas::draft_2020_12::loader::Loader::new()) as LoaderStrategyBox,
                 ),
                 (
                     MetaSchemaId::Draft201909,
@@ -76,7 +54,7 @@ impl<'a> LoaderContext<'a> {
     ) -> Result<(), &'static str> {
         let meta_schema_id = self.discover_meta_schema_id(node.clone(), default_meta_schema_id);
 
-        let loader = self.loaders.get_mut(&meta_schema_id).unwrap();
+        let loader = self.strategies.get_mut(&meta_schema_id).unwrap();
 
         let node_url = loader.get_root_node_url(node.clone(), node_url)?;
 
@@ -101,7 +79,7 @@ impl<'a> LoaderContext<'a> {
         let meta_schema_id =
             self.discover_meta_schema_id(root_node.clone(), default_meta_schema_id);
 
-        let loader = self.loaders.get(&meta_schema_id).unwrap();
+        let loader = self.strategies.get(&meta_schema_id).unwrap();
 
         let node_url = loader.get_root_node_url(root_node.clone(), node_url)?;
 
@@ -128,7 +106,7 @@ impl<'a> LoaderContext<'a> {
         node: Rc<ValueRc>,
         default_meta_schema_id: MetaSchemaId,
     ) -> MetaSchemaId {
-        for (schema_id, loader) in self.loaders.iter() {
+        for (schema_id, loader) in self.strategies.iter() {
             if loader.is_schema_root_node(node.clone()) {
                 return *schema_id;
             }

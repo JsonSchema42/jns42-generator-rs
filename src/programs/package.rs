@@ -1,4 +1,4 @@
-use crate::schemas::loader::LoaderContext;
+use crate::schemas::loader_context::LoaderContext;
 use crate::schemas::meta::MetaSchemaId;
 use clap::Parser;
 use url::Url;
@@ -33,9 +33,9 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
         ..
     } = options;
 
-    let mut manager = LoaderContext::new();
+    let mut loader = LoaderContext::new();
 
-    manager.load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;
+    loader.load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;
 
     Ok(())
 }

@@ -2,7 +2,7 @@ use crate::{
     schemas::{InterpreterCommon, InterpreterContext, InterpreterModelInfo},
     utils::Namer,
 };
-use inflector::cases::classcase::to_class_case;
+use inflector::cases::{classcase::to_class_case, snakecase::to_snake_case};
 use quote::{format_ident, quote, TokenStreamExt, __private::TokenStream};
 use rust_format::Formatter;
 use url::Url;
@@ -21,7 +21,7 @@ impl<'a> ModelsRsGenerator<'a> {
     }
 
     pub fn generate_file_content(&self) -> Result<String, &'static str> {
-        let tokens = self.generate_file_tokenstream()?;
+        let tokens = self.generate_file_token_stream()?;
 
         let formatter = rust_format::RustFmt::new();
 
@@ -32,7 +32,7 @@ impl<'a> ModelsRsGenerator<'a> {
         Ok(content)
     }
 
-    fn generate_file_tokenstream(&self) -> Result<TokenStream, &'static str> {
+    fn generate_file_token_stream(&self) -> Result<TokenStream, &'static str> {
         let mut tokens = quote! {};
 
         tokens.append_all(quote! {
@@ -40,18 +40,18 @@ impl<'a> ModelsRsGenerator<'a> {
         });
 
         for node_url in self.loader_context.get_all_node_urls() {
-            tokens.append_all(self.generate_model_tokenstream(&node_url));
+            tokens.append_all(self.generate_model_token_stream(&node_url));
         }
 
         Ok(tokens)
     }
 
-    fn generate_model_tokenstream(&self, node_url: &Url) -> Result<TokenStream, &'static str> {
+    fn generate_model_token_stream(&self, node_url: &Url) -> Result<TokenStream, &'static str> {
         let node_name = self.namer.get_name(node_url).ok_or("could not find name")?;
 
         let model_name = node_name.join(" ");
         let model_name = to_class_case(&model_name);
-        let model_name = format_ident!("{}", model_name);
+        let model_name = format_ident!("r#{}", model_name);
 
         let mut tokens = quote! {};
 
@@ -88,11 +88,35 @@ impl<'a> ModelsRsGenerator<'a> {
                     pub type #model_name<T> = Vec<T>;
                 });
             }
-            Some(InterpreterModelInfo::Object) => {
+            Some(InterpreterModelInfo::Object(property_infos)) => {
+                let mut property_tokens = quote! {};
+
+                for property_info in property_infos {
+                    let property_node_name = self
+                        .namer
+                        .get_name(&property_info.node_url)
+                        .ok_or("could not find name")?;
+
+                    let property_name = property_info.name;
+
+                    let property_identifier = &property_name;
+                    let property_identifier = to_snake_case(property_identifier);
+                    let property_identifier = format_ident!("r#{}", property_identifier);
+
+                    let property_model_name = property_node_name.join(" ");
+                    let property_model_name = to_class_case(&property_model_name);
+                    let property_model_name = format_ident!("r#{}", property_model_name);
+
+                    property_tokens.append_all(quote! {
+                        #[serde(rename = #property_name)]
+                        pub #property_identifier: #property_model_name,
+                    });
+                }
+
                 tokens.append_all(quote! {
                     #[derive(Serialize, Deserialize, Debug, Default)]
                     pub struct #model_name {
-                        //
+                        #property_tokens
                     }
                 });
             }
@@ -100,7 +124,7 @@ impl<'a> ModelsRsGenerator<'a> {
                 tokens.append_all(quote! {
                     #[derive(Serialize, Deserialize, Debug, Default)]
                     pub struct #model_name {
-                        //
+
                     }
                 });
             }

@@ -158,7 +158,5 @@ mod tests {
         .unwrap();
 
         // let b = ValueRc::from(a);
-
-        println!("{:?}", a);
     }
 }

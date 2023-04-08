@@ -1,9 +1,10 @@
 use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
+use crate::schemas::interpreter_common::InterpreterModelPropertyInfo;
 use crate::schemas::interpreter_strategy::InterpreterStrategy;
 use crate::schemas::{InterpreterCommon, InterpreterModelInfo};
 use crate::utils::ValueRc;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 use std::rc::Rc;
 use url::Url;
 
@@ -122,7 +123,35 @@ impl InterpreterCommon for Interpreter {
                 "number" => Some(InterpreterModelInfo::Number),
                 "string" => Some(InterpreterModelInfo::String),
                 "array" => Some(InterpreterModelInfo::Array),
-                "object" => Some(InterpreterModelInfo::Object),
+                "object" => {
+                    let mut property_infos = Vec::new();
+
+                    let required_property_names: HashSet<_> = node
+                        .select_required_property_names()
+                        .unwrap_or_default()
+                        .into_iter()
+                        .collect();
+                    for (pointer, name) in node
+                        .select_property_names_entries(node_url.fragment().unwrap_or_default())
+                        .unwrap_or_default()
+                    {
+                        let mut node_url = node_url.clone();
+                        node_url.set_fragment(if pointer.is_empty() {
+                            None
+                        } else {
+                            Some(pointer.as_str())
+                        });
+                        let property_info = InterpreterModelPropertyInfo {
+                            name: name.to_owned(),
+                            required: required_property_names.contains(name),
+                            node_url,
+                        };
+
+                        property_infos.push(property_info);
+                    }
+
+                    Some(InterpreterModelInfo::Object(property_infos))
+                }
                 _ => Some(InterpreterModelInfo::Null),
             };
         }

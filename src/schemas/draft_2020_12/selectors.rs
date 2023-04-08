@@ -7,6 +7,9 @@ pub trait Selectors {
     fn select_ref(&self) -> Option<&str>;
     fn select_types(&self) -> Option<Vec<&str>>;
 
+    fn select_required_property_names(&self) -> Option<Vec<&str>>;
+    fn select_property_names_entries(&self, pointer: &str) -> Option<Vec<(String, &str)>>;
+
     fn select_all_sub_nodes_and_self(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
     fn select_all_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
     fn select_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
@@ -51,6 +54,33 @@ impl Selectors for Rc<ValueRc> {
         }
 
         None
+    }
+
+    fn select_required_property_names(&self) -> Option<Vec<&str>> {
+        let result = self
+            .as_object()?
+            .get("required")?
+            .as_array()?
+            .iter()
+            .filter_map(|element| element.as_str())
+            .collect();
+        Some(result)
+    }
+
+    fn select_property_names_entries(&self, pointer: &str) -> Option<Vec<(String, &str)>> {
+        let result = self
+            .as_object()?
+            .get("properties")?
+            .as_object()?
+            .iter()
+            .map(|(sub_pointer, sub_node)| {
+                (
+                    join_json_pointer(pointer, vec!["properties", sub_pointer.as_str()]),
+                    sub_pointer.as_str(),
+                )
+            })
+            .collect();
+        Some(result)
     }
 
     fn select_all_sub_nodes_and_self(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)> {
@@ -240,6 +270,4 @@ impl Selectors for Rc<ValueRc> {
 
         Some(result)
     }
-
-    //
 }

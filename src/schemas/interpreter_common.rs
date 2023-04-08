@@ -7,7 +7,13 @@ pub enum InterpreterModelInfo {
     Number,
     String,
     Array,
-    Object,
+    Object(Vec<InterpreterModelPropertyInfo>),
+}
+
+pub struct InterpreterModelPropertyInfo {
+    pub node_url: Url,
+    pub required: bool,
+    pub name: String,
 }
 
 pub trait InterpreterCommon {

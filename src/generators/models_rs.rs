@@ -17,7 +17,7 @@ impl<'a> ModelsRsGenerator<'a> {
     }
 
     pub fn generate_file_content(&self) -> Result<String, &'static str> {
-        let tokens = self.generate_all_models_tokenstream()?;
+        let tokens = self.generate_file_tokenstream()?;
 
         let formatter = rust_format::RustFmt::new();
 
@@ -28,8 +28,12 @@ impl<'a> ModelsRsGenerator<'a> {
         Ok(content)
     }
 
-    fn generate_all_models_tokenstream(&self) -> Result<TokenStream, &'static str> {
+    fn generate_file_tokenstream(&self) -> Result<TokenStream, &'static str> {
         let mut tokens = quote! {};
+
+        tokens.append_all(quote! {
+            use serde::{Deserialize, Serialize};
+        });
 
         for node_url in self.loader_context.get_all_node_urls() {
             tokens.append_all(self.generate_model_tokenstream(&node_url));
@@ -48,6 +52,7 @@ impl<'a> ModelsRsGenerator<'a> {
         let mut tokens = quote! {};
 
         tokens.append_all(quote! {
+            #[derive(Serialize, Deserialize, Debug)]
             pub struct #name{
 
             }

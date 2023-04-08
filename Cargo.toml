@@ -12,17 +12,17 @@ keywords = ["good", "json", "schema"]
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-cargo_toml = "0.15.2"
-clap = { version = "4.1.14", features = ["derive"] }
-quote = "1.0.26"
-rust-format = { version = "0.3.4", features = ["token_stream"] }
-radix_fmt = "1.0.0"
-serde = "1.0.158"
-serde_json = "1.0.94"
-toml = "0.7.3"
-url = "2.3.1"
-urlencoding = "2.1.2"
-Inflector = "0.11.4"
+cargo_toml = "0.15"
+clap = { version = "4.1", features = ["derive"] }
+quote = "1.0"
+rust-format = { version = "0.3", features = ["token_stream"] }
+radix_fmt = "1.0"
+serde = "1.0"
+serde_json = "1.0"
+toml = { version = "0.7", features = ["preserve_order"] }
+url = "2.3"
+urlencoding = "2.1"
+Inflector = "0.11"
 
 [lib]
 name = "goodschema"

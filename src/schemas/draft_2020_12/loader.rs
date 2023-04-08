@@ -1,7 +1,7 @@
 use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
 use crate::schemas::loader_strategy::LoaderStrategy;
-use crate::utils::value_rc::ValueRc;
+use crate::utils::ValueRc;
 use std::collections::HashMap;
 use std::rc::Rc;
 use url::Url;

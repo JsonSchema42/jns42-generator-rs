@@ -4,6 +4,10 @@ pub mod draft_07;
 pub mod draft_2019_09;
 pub mod draft_2020_12;
 
-pub mod loader_context;
-pub mod loader_strategy;
-pub mod meta;
+mod loader_context;
+mod loader_strategy;
+mod meta;
+
+pub use loader_context::LoaderContext;
+pub use loader_strategy::{LoaderStrategy, LoaderStrategyBox};
+pub use meta::MetaSchemaId;

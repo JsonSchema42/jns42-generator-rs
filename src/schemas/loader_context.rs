@@ -1,7 +1,7 @@
 use super::loader_strategy::LoaderStrategyBox;
 use super::meta::MetaSchemaId;
-use crate::schemas;
-use crate::utils::value_rc::ValueRc;
+use crate::schemas::{draft_04, draft_06, draft_07, draft_2019_09, draft_2020_12};
+use crate::utils::ValueRc;
 use std::rc::Rc;
 use std::{collections::HashMap, fs::File};
 use url::Url;
@@ -20,24 +20,15 @@ impl<'a> LoaderContext<'a> {
             strategies: vec![
                 (
                     MetaSchemaId::Draft202012,
-                    Box::new(schemas::draft_2020_12::loader::Loader::new()) as LoaderStrategyBox,
+                    Box::new(draft_2020_12::Loader::new()) as LoaderStrategyBox,
                 ),
                 (
                     MetaSchemaId::Draft201909,
-                    Box::new(schemas::draft_2019_09::loader::Loader::new()),
+                    Box::new(draft_2019_09::Loader::new()),
                 ),
-                (
-                    MetaSchemaId::Draft07,
-                    Box::new(schemas::draft_07::loader::Loader::new()),
-                ),
-                (
-                    MetaSchemaId::Draft06,
-                    Box::new(schemas::draft_06::loader::Loader::new()),
-                ),
-                (
-                    MetaSchemaId::Draft04,
-                    Box::new(schemas::draft_04::loader::Loader::new()),
-                ),
+                (MetaSchemaId::Draft07, Box::new(draft_07::Loader::new())),
+                (MetaSchemaId::Draft06, Box::new(draft_06::Loader::new())),
+                (MetaSchemaId::Draft04, Box::new(draft_04::Loader::new())),
             ]
             .into_iter()
             .collect(),

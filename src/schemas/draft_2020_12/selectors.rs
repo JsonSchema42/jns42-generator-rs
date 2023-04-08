@@ -1,4 +1,4 @@
-use crate::utils::{json_pointer::join_json_pointer, value_rc::ValueRc};
+use crate::utils::{join_json_pointer, ValueRc};
 use std::rc::Rc;
 
 pub trait Selectors {

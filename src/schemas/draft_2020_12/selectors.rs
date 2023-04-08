@@ -5,6 +5,7 @@ pub trait Selectors {
     fn select_schema(&self) -> Option<&str>;
     fn select_id(&self) -> Option<&str>;
     fn select_ref(&self) -> Option<&str>;
+    fn select_types(&self) -> Option<Vec<&str>>;
 
     fn select_all_sub_nodes_and_self(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
     fn select_all_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
@@ -38,6 +39,18 @@ impl Selectors for Rc<ValueRc> {
 
     fn select_ref(&self) -> Option<&str> {
         self.as_object()?.get("$ref")?.as_str()
+    }
+
+    fn select_types(&self) -> Option<Vec<&str>> {
+        if let Some(value) = self.as_object()?.get("type")?.as_str() {
+            return Some(vec![value]);
+        }
+
+        if let Some(value) = self.as_object()?.get("type")?.as_array() {
+            return Some(value.iter().filter_map(|value| value.as_str()).collect());
+        }
+
+        None
     }
 
     fn select_all_sub_nodes_and_self(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)> {

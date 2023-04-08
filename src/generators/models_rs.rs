@@ -1,4 +1,7 @@
-use crate::{schemas::InterpreterContext, utils::Namer};
+use crate::{
+    schemas::{InterpreterCommon, InterpreterContext, InterpreterModelInfo},
+    utils::Namer,
+};
 use inflector::cases::classcase::to_class_case;
 use quote::{format_ident, quote, TokenStreamExt, __private::TokenStream};
 use rust_format::Formatter;
@@ -52,12 +55,56 @@ impl<'a> ModelsRsGenerator<'a> {
 
         let mut tokens = quote! {};
 
-        tokens.append_all(quote! {
-            #[derive(Serialize, Deserialize, Debug, Default)]
-            pub struct #model_name{
-                //
+        let model_info = self.loader_context.get_node_model_info(node_url);
+
+        match model_info {
+            Some(InterpreterModelInfo::Null) => {
+                tokens.append_all(quote! {
+                    pub type #model_name = ();
+                });
             }
-        });
+            Some(InterpreterModelInfo::Boolean) => {
+                tokens.append_all(quote! {
+                    pub type #model_name = bool;
+                });
+            }
+            Some(InterpreterModelInfo::Integer) => {
+                tokens.append_all(quote! {
+                    pub type #model_name = i64;
+                });
+            }
+            Some(InterpreterModelInfo::Number) => {
+                tokens.append_all(quote! {
+                    pub type #model_name = f64;
+                });
+            }
+            Some(InterpreterModelInfo::String) => {
+                tokens.append_all(quote! {
+                    pub type #model_name = String;
+                });
+            }
+            Some(InterpreterModelInfo::Array) => {
+                tokens.append_all(quote! {
+                    pub type #model_name<T> = Vec<T>;
+                });
+            }
+            Some(InterpreterModelInfo::Object) => {
+                tokens.append_all(quote! {
+                    #[derive(Serialize, Deserialize, Debug, Default)]
+                    pub struct #model_name {
+                        //
+                    }
+                });
+            }
+            _ => {
+                tokens.append_all(quote! {
+                    #[derive(Serialize, Deserialize, Debug, Default)]
+                    pub struct #model_name {
+                        //
+                    }
+                });
+            }
+        };
 
         Ok(tokens)
     }

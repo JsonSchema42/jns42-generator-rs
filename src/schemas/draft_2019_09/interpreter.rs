@@ -1,6 +1,6 @@
 use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
-use crate::schemas::InterpreterStrategy;
+use crate::schemas::{InterpreterCommon, InterpreterModelInfo, InterpreterStrategy};
 use crate::utils::ValueRc;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -49,6 +49,12 @@ impl InterpreterStrategy for Interpreter {
         _node: Rc<ValueRc>,
         _default_node_url: &Url,
     ) -> Result<Url, &'static str> {
+        todo!()
+    }
+}
+
+impl InterpreterCommon for Interpreter {
+    fn get_node_model_info(&self, _node_url: &Url) -> Option<InterpreterModelInfo> {
         todo!()
     }
 }

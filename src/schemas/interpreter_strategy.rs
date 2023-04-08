@@ -1,10 +1,11 @@
+use super::InterpreterCommon;
 use crate::utils::ValueRc;
 use std::rc::Rc;
 use url::Url;
 
 pub type InterpreterStrategyBox<'a> = Box<dyn InterpreterStrategy + 'a>;
 
-pub trait InterpreterStrategy {
+pub trait InterpreterStrategy: InterpreterCommon {
     fn is_schema_root_node(&self, node: Rc<ValueRc>) -> bool;
 
     fn load_root_node(&mut self, node: Rc<ValueRc>, node_url: &Url) -> Result<(), &'static str>;

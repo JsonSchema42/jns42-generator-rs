@@ -1,6 +1,7 @@
 use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
 use crate::schemas::interpreter_strategy::InterpreterStrategy;
+use crate::schemas::{InterpreterCommon, InterpreterModelInfo};
 use crate::utils::ValueRc;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -102,5 +103,30 @@ impl InterpreterStrategy for Interpreter {
         }
 
         Ok(node_url)
+    }
+}
+
+impl InterpreterCommon for Interpreter {
+    fn get_node_model_info(&self, node_url: &Url) -> Option<InterpreterModelInfo> {
+        let node = self.node_map.get(node_url)?;
+
+        let types = node.select_types()?;
+
+        if types.len() == 1 {
+            let first_type = *types.first()?;
+
+            return match first_type {
+                "null" => Some(InterpreterModelInfo::Null),
+                "boolean" => Some(InterpreterModelInfo::Boolean),
+                "integer" => Some(InterpreterModelInfo::Integer),
+                "number" => Some(InterpreterModelInfo::Number),
+                "string" => Some(InterpreterModelInfo::String),
+                "array" => Some(InterpreterModelInfo::Array),
+                "object" => Some(InterpreterModelInfo::Object),
+                _ => Some(InterpreterModelInfo::Null),
+            };
+        }
+
+        None
     }
 }

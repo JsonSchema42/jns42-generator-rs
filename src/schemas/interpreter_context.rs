@@ -1,5 +1,6 @@
 use super::interpreter_strategy::InterpreterStrategyBox;
 use super::meta_schema_id::MetaSchemaId;
+use super::{InterpreterCommon, InterpreterModelInfo};
 use crate::schemas::{draft_04, draft_06, draft_07, draft_2019_09, draft_2020_12};
 use crate::utils::ValueRc;
 use regex::Regex;
@@ -176,6 +177,16 @@ impl<'a> InterpreterContext<'a> {
             }
             _ => Err("not supported"),
         }
+    }
+}
+
+impl<'a> InterpreterCommon for InterpreterContext<'a> {
+    fn get_node_model_info(&self, node_url: &Url) -> Option<InterpreterModelInfo> {
+        let meta_schema_id = self.node_meta_schema_id_map.get(node_url)?;
+
+        let strategy = self.strategies.get(meta_schema_id)?;
+
+        strategy.get_node_model_info(node_url)
     }
 }
 

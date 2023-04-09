@@ -1,4 +1,15 @@
 {
+  "version": "0.2",
+  "language": "en",
+  "enableFiletypes": [
+    "toml"
+  ],
+  "ignorePaths": [
+    ".package/",
+    "target/",
+    "coverage/",
+    "fixtures/"
+  ],
   "words": [
     "Bulthuis",
     "classcase",
@@ -9,14 +20,5 @@
     "snakecase",
     "structs",
     "urlencoding"
-  ],
-  "ignorePaths": [
-    ".package/",
-    "target/",
-    "coverage/",
-    "fixtures/"
-  ],
-  "enableFiletypes": [
-    "toml"
   ]
 }

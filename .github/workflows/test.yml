@@ -44,4 +44,4 @@ jobs:
     container: node:18
     steps:
       - uses: actions/checkout@v3
-      - run: npx --yes cspell src
+      - run: npx --yes cspell .

@@ -1,9 +1,22 @@
 {
-    "words": [
-        "classcase",
-        "hasher",
-        "inflector",
-        "snakecase",
-        "urlencoding"
-    ]
+  "words": [
+    "Bulthuis",
+    "classcase",
+    "goodschema",
+    "hasher",
+    "inflector",
+    "serde",
+    "snakecase",
+    "structs",
+    "urlencoding"
+  ],
+  "ignorePaths": [
+    ".*",
+    "target/",
+    "coverage/",
+    "fixtures/"
+  ],
+  "enableFiletypes": [
+    "toml"
+  ]
 }

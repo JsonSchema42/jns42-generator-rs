@@ -180,6 +180,12 @@ impl<'a> InterpreterContext<'a> {
     }
 }
 
+impl<'a> Default for InterpreterContext<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'a> InterpreterCommon for InterpreterContext<'a> {
     fn get_node_model_info(&self, node_url: &Url) -> Option<InterpreterModelInfo> {
         let meta_schema_id = self.node_meta_schema_id_map.get(node_url)?;

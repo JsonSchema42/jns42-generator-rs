@@ -22,6 +22,12 @@ impl Interpreter {
     }
 }
 
+impl Default for Interpreter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl InterpreterStrategy for Interpreter {
     fn is_schema_root_node(&self, node: Rc<ValueRc>) -> bool {
         if let Some(schema) = node.select_schema() {

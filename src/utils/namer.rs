@@ -85,13 +85,13 @@ mod tests {
         assert_eq!(namer.get_name(&1).unwrap(), &vec!["Good"]);
 
         namer.register_name(2, "Good")?;
-        assert_eq!(namer.get_name(&1).unwrap(), &vec!["Good", "37txpf"]);
-        assert_eq!(namer.get_name(&2).unwrap(), &vec!["Good", "b8xp0y"]);
+        assert_eq!(namer.get_name(&1).unwrap(), &vec!["Good", "262057"]);
+        assert_eq!(namer.get_name(&2).unwrap(), &vec!["Good", "592321"]);
 
         namer.register_name(3, "Good")?;
-        assert_eq!(namer.get_name(&1).unwrap(), &vec!["Good", "37txpf"]);
-        assert_eq!(namer.get_name(&2).unwrap(), &vec!["Good", "b8xp0y"]);
-        assert_eq!(namer.get_name(&3).unwrap(), &vec!["Good", "1jzl4lj"]);
+        assert_eq!(namer.get_name(&1).unwrap(), &vec!["Good", "262057"]);
+        assert_eq!(namer.get_name(&2).unwrap(), &vec!["Good", "592321"]);
+        assert_eq!(namer.get_name(&3).unwrap(), &vec!["Good", "528060"]);
 
         Ok(())
     }

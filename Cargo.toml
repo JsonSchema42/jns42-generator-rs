@@ -23,6 +23,7 @@ url = "2.3"
 urlencoding = "2.1"
 Inflector = "0.11"
 regex = "1.7.3"
+proc-macro2 = "1.0"
 
 [lib]
 path = "src/lib.rs"

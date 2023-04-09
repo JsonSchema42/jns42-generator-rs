@@ -183,6 +183,7 @@ dependencies = [
  "Inflector",
  "cargo_toml",
  "clap",
+ "proc-macro2",
  "quote",
  "regex",
  "rust-format",

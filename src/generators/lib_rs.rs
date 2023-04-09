@@ -1,4 +1,5 @@
-use quote::{quote, TokenStreamExt, __private::TokenStream};
+use proc_macro2::TokenStream;
+use quote::{quote, TokenStreamExt};
 use rust_format::Formatter;
 
 pub struct LibRsGenerator;
@@ -9,9 +10,16 @@ impl LibRsGenerator {
     }
 
     pub fn generate_file_content(&self) -> Result<String, &'static str> {
-        let tokens = self.generate_file_token_stream()?;
+        let mut tokens = quote!();
 
-        let formatter = rust_format::RustFmt::new();
+        tokens.append_all(quote! {
+            ///@generated
+        });
+
+        tokens.append_all(self.generate_file_token_stream()?);
+
+        let configuration = rust_format::Config::new_str().edition(rust_format::Edition::Rust2021);
+        let formatter = rust_format::RustFmt::from_config(configuration);
 
         let content = formatter
             .format_tokens(tokens)

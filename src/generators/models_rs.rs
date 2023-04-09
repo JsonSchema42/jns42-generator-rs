@@ -3,7 +3,8 @@ use crate::{
     utils::Namer,
 };
 use inflector::cases::{classcase::to_class_case, snakecase::to_snake_case};
-use quote::{format_ident, quote, TokenStreamExt, __private::TokenStream};
+use proc_macro2::TokenStream;
+use quote::{format_ident, quote, TokenStreamExt};
 use rust_format::Formatter;
 use url::Url;
 
@@ -21,9 +22,16 @@ impl<'a> ModelsRsGenerator<'a> {
     }
 
     pub fn generate_file_content(&self) -> Result<String, &'static str> {
-        let tokens = self.generate_file_token_stream()?;
+        let mut tokens = quote!();
 
-        let formatter = rust_format::RustFmt::new();
+        tokens.append_all(quote! {
+            ///@generated
+        });
+
+        tokens.append_all(self.generate_file_token_stream()?);
+
+        let configuration = rust_format::Config::new_str().edition(rust_format::Edition::Rust2021);
+        let formatter = rust_format::RustFmt::from_config(configuration);
 
         let content = formatter
             .format_tokens(tokens)

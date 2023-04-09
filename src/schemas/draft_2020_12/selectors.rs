@@ -73,7 +73,7 @@ impl Selectors for Rc<ValueRc> {
             .get("properties")?
             .as_object()?
             .iter()
-            .map(|(sub_pointer, sub_node)| {
+            .map(|(sub_pointer, _sub_node)| {
                 (
                     join_json_pointer(pointer, vec!["properties", sub_pointer.as_str()]),
                     sub_pointer.as_str(),

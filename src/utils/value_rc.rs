@@ -150,13 +150,11 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let a: ValueRc = serde_json::from_str(
+        let _a: ValueRc = serde_json::from_str(
             r#"
             [{"a":true}]
             "#,
         )
         .unwrap();
-
-        // let b = ValueRc::from(a);
     }
 }

@@ -5,7 +5,6 @@ use crate::{
 use inflector::cases::{classcase::to_class_case, snakecase::to_snake_case};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote, TokenStreamExt};
-use rust_format::Formatter;
 use url::Url;
 
 pub struct ModelsRsGenerator<'a> {

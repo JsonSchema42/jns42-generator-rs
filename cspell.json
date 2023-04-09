@@ -11,6 +11,7 @@
     "urlencoding"
   ],
   "ignorePaths": [
+    ".package/",
     "target/",
     "coverage/",
     "fixtures/"

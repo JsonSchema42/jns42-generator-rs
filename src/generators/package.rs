@@ -1,16 +1,13 @@
-use url::Url;
-
+use super::{
+    cargo_toml::CargoTomlGenerator, file::generate_file_content, lib_rs,
+    models_rs::ModelsRsGenerator, validators_rs::ValidatorsRsGenerator,
+};
 use crate::{schemas::InterpreterContext, utils::Namer};
 use std::{fs, path::PathBuf};
-
-use super::{
-    cargo_toml::CargoTomlGenerator, lib_rs::LibRsGenerator, models_rs::ModelsRsGenerator,
-    validators_rs::ValidatorsRsGenerator,
-};
+use url::Url;
 
 pub struct PackageGenerator<'a> {
     cargo_toml_generator: CargoTomlGenerator,
-    lib_rs_generator: LibRsGenerator,
     models_rs_generator: ModelsRsGenerator<'a>,
     validators_rs_generator: ValidatorsRsGenerator<'a>,
 }
@@ -19,7 +16,6 @@ impl<'a> PackageGenerator<'a> {
     pub fn new(schema_loader: &'a InterpreterContext<'a>, namer: &'a Namer<Url>) -> Self {
         Self {
             cargo_toml_generator: CargoTomlGenerator::new(),
-            lib_rs_generator: LibRsGenerator::new(),
             models_rs_generator: ModelsRsGenerator::new(schema_loader, namer),
             validators_rs_generator: ValidatorsRsGenerator::new(schema_loader, namer),
         }
@@ -43,20 +39,23 @@ impl<'a> PackageGenerator<'a> {
         }
 
         {
-            let content = self.lib_rs_generator.generate_file_content()?;
+            let tokens = lib_rs::generate_file_token_stream()?;
+            let content = generate_file_content(tokens)?;
 
             fs::write(package_directory.join("lib.rs"), content).or(Err("write lib.rs fails"))?;
         }
 
         {
-            let content = self.models_rs_generator.generate_file_content()?;
+            let tokens = self.models_rs_generator.generate_file_token_stream()?;
+            let content = generate_file_content(tokens)?;
 
             fs::write(package_directory.join("models.rs"), content)
                 .or(Err("write models.rs fails"))?;
         }
 
         {
-            let content = self.validators_rs_generator.generate_file_content()?;
+            let tokens = self.validators_rs_generator.generate_file_token_stream()?;
+            let content = generate_file_content(tokens)?;
 
             fs::write(package_directory.join("validators.rs"), content)
                 .or(Err("write validators.rs fails"))?;

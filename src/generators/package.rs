@@ -1,13 +1,12 @@
 use super::{
-    cargo_toml::CargoTomlGenerator, file::generate_file_content, lib_rs,
-    models_rs::ModelsRsGenerator, validators_rs::ValidatorsRsGenerator,
+    cargo_toml, file::generate_file_content, lib_rs, models_rs::ModelsRsGenerator,
+    validators_rs::ValidatorsRsGenerator,
 };
 use crate::{schemas::InterpreterContext, utils::Namer};
 use std::{fs, path::PathBuf};
 use url::Url;
 
 pub struct PackageGenerator<'a> {
-    cargo_toml_generator: CargoTomlGenerator,
     models_rs_generator: ModelsRsGenerator<'a>,
     validators_rs_generator: ValidatorsRsGenerator<'a>,
 }
@@ -15,7 +14,6 @@ pub struct PackageGenerator<'a> {
 impl<'a> PackageGenerator<'a> {
     pub fn new(schema_loader: &'a InterpreterContext<'a>, namer: &'a Namer<Url>) -> Self {
         Self {
-            cargo_toml_generator: CargoTomlGenerator::new(),
             models_rs_generator: ModelsRsGenerator::new(schema_loader, namer),
             validators_rs_generator: ValidatorsRsGenerator::new(schema_loader, namer),
         }
@@ -30,10 +28,7 @@ impl<'a> PackageGenerator<'a> {
         fs::create_dir_all(package_directory).or(Err("create directory failed"))?;
 
         {
-            let content = self
-                .cargo_toml_generator
-                .generate_file_content(package_name, package_version)?;
-
+            let content = cargo_toml::generate_file_content(package_name, package_version)?;
             fs::write(package_directory.join("Cargo.toml"), content)
                 .or(Err("write Cargo.toml fails"))?;
         }

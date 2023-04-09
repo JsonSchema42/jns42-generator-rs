@@ -130,14 +130,14 @@ impl<'a> InterpreterContext<'a> {
 
         let fragment = node_url.fragment();
         if let Some(fragment) = fragment {
-            let mut fragement_parts: Vec<_> = fragment
+            let mut fragment_parts: Vec<_> = fragment
                 .split('/')
                 .map(|part| urlencoding::decode(part).unwrap())
                 .collect();
-            if let Some(part) = fragement_parts.pop() {
+            if let Some(part) = fragment_parts.pop() {
                 name_parts.push(part.into_owned());
             }
-            if let Some(part) = fragement_parts.pop() {
+            if let Some(part) = fragment_parts.pop() {
                 name_parts.push(part.into_owned());
             }
         }

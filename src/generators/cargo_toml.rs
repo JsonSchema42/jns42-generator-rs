@@ -55,6 +55,6 @@ impl CargoTomlGenerator {
             map
         });
 
-        toml::ser::to_string_pretty(&manifest_table).or(Err("serializtion failed"))
+        toml::ser::to_string_pretty(&manifest_table).or(Err("serialization failed"))
     }
 }

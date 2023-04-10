@@ -109,6 +109,36 @@ impl<'a> InterpreterContext<'a> {
         Ok(())
     }
 
+    fn fetch_json_from_url(url: &Url) -> Result<Rc<ValueRc>, &'static str> {
+        match url.scheme() {
+            "file" => {
+                let path = url.path();
+                let reader = File::open(path).or(Err("error reading file"))?;
+
+                let value: ValueRc =
+                    serde_json::from_reader(reader).or(Err("error deserializing file content"))?;
+                let value = Rc::new(value);
+
+                Ok(value)
+            }
+            _ => Err("not supported"),
+        }
+    }
+
+    fn discover_meta_schema_id(
+        &self,
+        node: Rc<ValueRc>,
+        default_meta_schema_id: MetaSchemaId,
+    ) -> MetaSchemaId {
+        for (schema_id, strategy) in self.strategies.iter() {
+            if strategy.is_schema_root_node(node.clone()) {
+                return *schema_id;
+            }
+        }
+
+        default_meta_schema_id
+    }
+
     pub fn get_all_node_urls(&self) -> Vec<Url> {
         self.node_meta_schema_id_map.keys().cloned().collect()
     }
@@ -147,36 +177,6 @@ impl<'a> InterpreterContext<'a> {
         }
 
         name_parts.join(" ")
-    }
-
-    fn discover_meta_schema_id(
-        &self,
-        node: Rc<ValueRc>,
-        default_meta_schema_id: MetaSchemaId,
-    ) -> MetaSchemaId {
-        for (schema_id, strategy) in self.strategies.iter() {
-            if strategy.is_schema_root_node(node.clone()) {
-                return *schema_id;
-            }
-        }
-
-        default_meta_schema_id
-    }
-
-    fn fetch_json_from_url(url: &Url) -> Result<Rc<ValueRc>, &'static str> {
-        match url.scheme() {
-            "file" => {
-                let path = url.path();
-                let reader = File::open(path).or(Err("error reading file"))?;
-
-                let value: ValueRc =
-                    serde_json::from_reader(reader).or(Err("error deserializing file content"))?;
-                let value = Rc::new(value);
-
-                Ok(value)
-            }
-            _ => Err("not supported"),
-        }
     }
 }
 

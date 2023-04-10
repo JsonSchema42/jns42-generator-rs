@@ -1,1 +1,1 @@
-# goodschema, Rust edition
+# JsonSchema42 code generator, Rust edition

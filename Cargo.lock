@@ -177,24 +177,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "goodschema"
-version = "0.0.0"
-dependencies = [
- "Inflector",
- "cargo_toml",
- "clap",
- "proc-macro2",
- "quote",
- "regex",
- "rust-format",
- "serde",
- "serde_json",
- "toml",
- "url",
- "urlencoding",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -260,6 +242,24 @@ name = "itoa"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"
+
+[[package]]
+name = "jns42_generator"
+version = "0.0.0"
+dependencies = [
+ "Inflector",
+ "cargo_toml",
+ "clap",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "rust-format",
+ "serde",
+ "serde_json",
+ "toml",
+ "url",
+ "urlencoding",
+]
 
 [[package]]
 name = "lazy_static"

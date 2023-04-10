@@ -4,10 +4,8 @@
   "enableFiletypes": [
     "toml"
   ],
+  "useGitignore": true,
   "ignorePaths": [
-    ".package/",
-    "target/",
-    "coverage/",
     "fixtures/"
   ],
   "words": [

@@ -76,19 +76,17 @@ impl InterpreterStrategy for Interpreter {
         for node_ref in node
             .select_all_sub_nodes_and_self("")
             .into_iter()
-            .filter_map(|(_sub_pointer, sub_node)| {
-                sub_node.select_ref().map(|value| value.to_owned())
-            })
+            .filter_map(|(_pointer, node)| node.select_ref().map(|value| value.to_owned()))
         {
-            let node_ref_url = node_url
+            let ref_node_url = node_url
                 .join(node_ref.as_str())
                 .map_err(|_error| "could not build node_ref_url")?;
-            let mut retrieval_ref_url = retrieval_url
+            let mut ref_retrieval_url = retrieval_url
                 .join(node_ref.as_str())
                 .map_err(|_error| "could not build retrieval_ref_url")?;
-            retrieval_ref_url.set_fragment(None);
+            ref_retrieval_url.set_fragment(None);
 
-            result.push((node_ref_url, retrieval_ref_url));
+            result.push((ref_node_url, ref_retrieval_url));
         }
 
         Ok(result)

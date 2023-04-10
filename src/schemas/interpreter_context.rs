@@ -74,7 +74,7 @@ impl<'a> InterpreterContext<'a> {
 
     pub fn load_from_url(
         &mut self,
-        node_url: &Url,
+        root_node_url: &Url,
         retrieval_url: &Url,
         default_meta_schema_id: MetaSchemaId,
     ) -> Result<(), &'static str> {
@@ -89,22 +89,22 @@ impl<'a> InterpreterContext<'a> {
 
         let strategy = self.strategies.get(&meta_schema_id).unwrap();
 
-        let node_url = strategy.get_root_node_url(root_node.clone(), node_url)?;
+        let root_node_url = strategy.get_root_node_url(root_node.clone(), root_node_url)?;
 
         self.retrieval_root_node_map
-            .insert(retrieval_url.clone(), node_url.clone());
+            .insert(retrieval_url.clone(), root_node_url.clone());
         self.root_node_retrieval_map
-            .insert(node_url.clone(), retrieval_url.clone());
+            .insert(root_node_url.clone(), retrieval_url.clone());
         self.root_node_meta_schema_id_map
-            .insert(node_url.clone(), meta_schema_id);
+            .insert(root_node_url.clone(), meta_schema_id);
 
         for (sub_node_url, sub_retrieval_url) in
-            strategy.get_referenced_node_urls(root_node.clone(), &node_url, retrieval_url)?
+            strategy.get_referenced_node_urls(root_node.clone(), &root_node_url, retrieval_url)?
         {
             self.load_from_url(&sub_node_url, &sub_retrieval_url, meta_schema_id)?;
         }
 
-        self.load_root_node(root_node, &node_url, default_meta_schema_id)?;
+        self.load_root_node(root_node, &root_node_url, default_meta_schema_id)?;
 
         Ok(())
     }

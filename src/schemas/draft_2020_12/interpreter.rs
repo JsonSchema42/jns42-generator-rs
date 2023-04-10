@@ -71,7 +71,6 @@ impl InterpreterStrategy for Interpreter {
         node_url: &Url,
         retrieval_url: &Url,
     ) -> Result<Vec<(Url, Url)>, &'static str> {
-        let node_url = self.get_root_node_url(node.clone(), node_url)?;
         let mut result = Vec::new();
 
         for node_ref in node

@@ -1,23 +1,30 @@
 use super::meta::META_SCHEMA_ID;
 use super::selectors::Selectors;
-use crate::schemas::loader::Loader;
-use crate::utils::value_rc::ValueRc;
-use std::collections::HashMap;
+use crate::schemas::{InterpreterCommon, InterpreterModelInfo, InterpreterStrategy};
+use crate::utils::ValueRc;
+use std::collections::BTreeMap;
 use std::rc::Rc;
 use url::Url;
 
-#[derive(Default)]
-pub struct LoaderImpl {
-    _root_node_map: HashMap<Url, serde_json::Value>,
+pub struct Interpreter {
+    _root_node_map: BTreeMap<Url, serde_json::Value>,
 }
 
-impl LoaderImpl {
+impl Interpreter {
     pub fn new() -> Self {
-        Self::default()
+        Self {
+            _root_node_map: Default::default(),
+        }
     }
 }
 
-impl Loader for LoaderImpl {
+impl Default for Interpreter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl InterpreterStrategy for Interpreter {
     fn is_schema_root_node(&self, node: Rc<ValueRc>) -> bool {
         if let Some(schema) = node.select_schema() {
             return schema == META_SCHEMA_ID;
@@ -34,7 +41,7 @@ impl Loader for LoaderImpl {
         todo!()
     }
 
-    fn get_sub_node_urls(
+    fn get_referenced_node_urls(
         &self,
         _node: Rc<ValueRc>,
         _node_url: &Url,
@@ -48,6 +55,12 @@ impl Loader for LoaderImpl {
         _node: Rc<ValueRc>,
         _default_node_url: &Url,
     ) -> Result<Url, &'static str> {
+        todo!()
+    }
+}
+
+impl InterpreterCommon for Interpreter {
+    fn get_node_model_info(&self, _node_url: &Url) -> Option<InterpreterModelInfo> {
         todo!()
     }
 }

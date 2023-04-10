@@ -1,13 +1,18 @@
-use crate::utils::{json_pointer::join_json_pointer, value_rc::ValueRc};
+use crate::utils::{join_json_pointer, ValueRc};
 use std::rc::Rc;
 
 pub trait Selectors {
     fn select_schema(&self) -> Option<&str>;
     fn select_id(&self) -> Option<&str>;
     fn select_ref(&self) -> Option<&str>;
+    fn select_types(&self) -> Option<Vec<&str>>;
 
-    fn select_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
+    fn select_required_property_names(&self) -> Option<Vec<&str>>;
+    fn select_property_names_entries(&self, pointer: &str) -> Option<Vec<(String, &str)>>;
+
+    fn select_all_sub_nodes_and_self(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
     fn select_all_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
+    fn select_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)>;
 
     fn select_sub_node_def_entries(&self, pointer: &str) -> Option<Vec<(String, Rc<ValueRc>)>>;
     fn select_sub_node_property_entries(&self, pointer: &str)
@@ -37,6 +42,53 @@ impl Selectors for Rc<ValueRc> {
 
     fn select_ref(&self) -> Option<&str> {
         self.as_object()?.get("$ref")?.as_str()
+    }
+
+    fn select_types(&self) -> Option<Vec<&str>> {
+        if let Some(value) = self.as_object()?.get("type")?.as_str() {
+            return Some(vec![value]);
+        }
+
+        if let Some(value) = self.as_object()?.get("type")?.as_array() {
+            return Some(value.iter().filter_map(|value| value.as_str()).collect());
+        }
+
+        None
+    }
+
+    fn select_required_property_names(&self) -> Option<Vec<&str>> {
+        let result = self
+            .as_object()?
+            .get("required")?
+            .as_array()?
+            .iter()
+            .filter_map(|element| element.as_str())
+            .collect();
+        Some(result)
+    }
+
+    fn select_property_names_entries(&self, pointer: &str) -> Option<Vec<(String, &str)>> {
+        let result = self
+            .as_object()?
+            .get("properties")?
+            .as_object()?
+            .iter()
+            .map(|(sub_pointer, _sub_node)| {
+                (
+                    join_json_pointer(pointer, vec!["properties", sub_pointer.as_str()]),
+                    sub_pointer.as_str(),
+                )
+            })
+            .collect();
+        Some(result)
+    }
+
+    fn select_all_sub_nodes_and_self(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)> {
+        let mut result = self.select_all_sub_nodes(pointer);
+
+        result.insert(0, (pointer.to_owned(), self.clone()));
+
+        result
     }
 
     fn select_all_sub_nodes(&self, pointer: &str) -> Vec<(String, Rc<ValueRc>)> {
@@ -90,7 +142,7 @@ impl Selectors for Rc<ValueRc> {
             .iter()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -110,7 +162,7 @@ impl Selectors for Rc<ValueRc> {
             .iter()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -126,7 +178,7 @@ impl Selectors for Rc<ValueRc> {
         let selected = self.as_object()?.get(select_name)?;
 
         let result = vec![(
-            join_json_pointer(vec![pointer, select_name]),
+            join_json_pointer(pointer, vec![select_name]),
             selected.clone(),
         )];
 
@@ -145,7 +197,7 @@ impl Selectors for Rc<ValueRc> {
             .enumerate()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.to_string().as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.to_string().as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -158,7 +210,7 @@ impl Selectors for Rc<ValueRc> {
         let selected = self.as_object()?.get(select_name)?;
 
         let result = vec![(
-            join_json_pointer(vec![pointer, select_name]),
+            join_json_pointer(pointer, vec![select_name]),
             selected.clone(),
         )];
 
@@ -174,7 +226,7 @@ impl Selectors for Rc<ValueRc> {
             .enumerate()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.to_string().as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.to_string().as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -192,7 +244,7 @@ impl Selectors for Rc<ValueRc> {
             .enumerate()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.to_string().as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.to_string().as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -210,7 +262,7 @@ impl Selectors for Rc<ValueRc> {
             .enumerate()
             .map(|(sub_pointer, sub_node)| {
                 (
-                    join_json_pointer(vec![pointer, select_name, sub_pointer.to_string().as_str()]),
+                    join_json_pointer(pointer, vec![select_name, sub_pointer.to_string().as_str()]),
                     sub_node.clone(),
                 )
             })
@@ -218,6 +270,4 @@ impl Selectors for Rc<ValueRc> {
 
         Some(result)
     }
-
-    //
 }

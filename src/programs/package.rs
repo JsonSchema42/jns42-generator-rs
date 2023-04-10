@@ -1,6 +1,10 @@
-use crate::schemas::manager::Manager;
-use crate::schemas::meta::MetaSchemaId;
+use crate::utils::Namer;
+use crate::{
+    generators::PackageGenerator,
+    schemas::{InterpreterContext, MetaSchemaId},
+};
 use clap::Parser;
+use std::path::PathBuf;
 use url::Url;
 
 #[derive(Parser, Debug)]
@@ -11,7 +15,7 @@ pub struct CommandOptions {
     pub default_meta_schema_url: MetaSchemaId,
 
     #[arg(long)]
-    pub package_directory: String,
+    pub package_directory: PathBuf,
 
     #[arg(long)]
     pub package_name: String,
@@ -30,12 +34,24 @@ pub fn run_command(options: CommandOptions) -> Result<(), &'static str> {
     let CommandOptions {
         schema_url,
         default_meta_schema_url,
+        package_name,
+        package_version,
+        package_directory,
         ..
     } = options;
 
-    let mut manager = Manager::new();
+    let mut loader_context = InterpreterContext::new();
+    loader_context.load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;
 
-    manager.load_from_url(&schema_url, &schema_url, default_meta_schema_url)?;
+    let mut namer = Namer::<Url>::new(0);
+    for node_url in loader_context.get_all_node_urls() {
+        let name = loader_context.get_node_model_name(&node_url);
+        namer.register_name(node_url, &name)?;
+    }
+
+    let package_generator = PackageGenerator::new(&loader_context, &namer);
+
+    package_generator.generate_package(&package_name, &package_version, &package_directory)?;
 
     Ok(())
 }

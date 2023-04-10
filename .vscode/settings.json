@@ -7,5 +7,6 @@
   "editor.rulers": [
     100
   ],
-  "rust-analyzer.check.command": "clippy"
+  "rust-analyzer.check.command": "clippy",
+  "cSpell.ignorePaths": []
 }

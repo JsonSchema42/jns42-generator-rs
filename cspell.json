@@ -1,0 +1,34 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "enableFiletypes": [
+    "toml"
+  ],
+  "useGitignore": true,
+  "enableGlobDot": true,
+  "ignorePaths": [
+    "fixtures/"
+  ],
+  "words": [
+    "bulthuis",
+    "classcase",
+    "clippy",
+    "goodschema",
+    "grcov",
+    "hasher",
+    "inflector",
+    "lcov",
+    "openapi",
+    "profraw",
+    "rustc",
+    "RUSTFLAGS",
+    "rustup",
+    "ryanluker",
+    "serde",
+    "snakecase",
+    "structs",
+    "tamasfe",
+    "urlencoding",
+    "vadimcn"
+  ]
+}

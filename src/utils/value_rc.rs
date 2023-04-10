@@ -1,6 +1,6 @@
 use core::fmt;
 use serde::de;
-use std::{collections::HashMap, rc::Rc};
+use std::{collections::BTreeMap, rc::Rc};
 
 #[derive(Debug)]
 pub enum ValueRc {
@@ -9,7 +9,7 @@ pub enum ValueRc {
     Float(f64),
     String(String),
     Array(Vec<Rc<ValueRc>>),
-    Object(HashMap<String, Rc<ValueRc>>),
+    Object(BTreeMap<String, Rc<ValueRc>>),
 }
 
 impl ValueRc {
@@ -48,7 +48,7 @@ impl ValueRc {
         }
     }
 
-    pub fn as_object(&self) -> Option<&HashMap<String, Rc<ValueRc>>> {
+    pub fn as_object(&self) -> Option<&BTreeMap<String, Rc<ValueRc>>> {
         match self {
             ValueRc::Object(value) => Some(value),
             _ => None,
@@ -136,7 +136,7 @@ impl<'de> de::Visitor<'de> for ValueRcVisitor {
     where
         A: de::MapAccess<'de>,
     {
-        let mut result = HashMap::new();
+        let mut result = BTreeMap::new();
         while let Some((key, value)) = value_map.next_entry::<String, ValueRc>()? {
             result.insert(key, Rc::new(value));
         }
@@ -150,15 +150,11 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let a: ValueRc = serde_json::from_str(
+        let _a: ValueRc = serde_json::from_str(
             r#"
             [{"a":true}]
             "#,
         )
         .unwrap();
-
-        // let b = ValueRc::from(a);
-
-        println!("{:?}", a);
     }
 }

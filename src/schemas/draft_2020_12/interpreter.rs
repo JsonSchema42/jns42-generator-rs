@@ -65,7 +65,7 @@ impl InterpreterStrategy for Interpreter {
         Ok(result)
     }
 
-    fn get_sub_node_urls(
+    fn get_referenced_node_urls(
         &self,
         node: Rc<ValueRc>,
         node_url: &Url,

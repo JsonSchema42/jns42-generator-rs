@@ -12,7 +12,7 @@ pub trait InterpreterStrategy: InterpreterCommon {
 
     fn index_root_node(&mut self, node_url: &Url) -> Result<Vec<Url>, &'static str>;
 
-    fn get_sub_node_urls(
+    fn get_referenced_node_urls(
         &self,
         node: Rc<ValueRc>,
         node_url: &Url,

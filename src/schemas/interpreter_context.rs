@@ -99,7 +99,7 @@ impl<'a> InterpreterContext<'a> {
             .insert(node_url.clone(), meta_schema_id);
 
         for (sub_node_url, sub_retrieval_url) in
-            strategy.get_sub_node_urls(root_node.clone(), &node_url, retrieval_url)?
+            strategy.get_referenced_node_urls(root_node.clone(), &node_url, retrieval_url)?
         {
             self.load_from_url(&sub_node_url, &sub_retrieval_url, meta_schema_id)?;
         }

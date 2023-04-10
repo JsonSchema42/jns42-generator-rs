@@ -5,18 +5,30 @@
     "toml"
   ],
   "useGitignore": true,
+  "enableGlobDot": true,
   "ignorePaths": [
     "fixtures/"
   ],
   "words": [
     "bulthuis",
     "classcase",
+    "clippy",
     "goodschema",
+    "grcov",
     "hasher",
     "inflector",
+    "lcov",
+    "openapi",
+    "profraw",
+    "rustc",
+    "RUSTFLAGS",
+    "rustup",
+    "ryanluker",
     "serde",
     "snakecase",
     "structs",
-    "urlencoding"
+    "tamasfe",
+    "urlencoding",
+    "vadimcn"
   ]
 }
